@@ -37,6 +37,8 @@ class ProductController extends Controller
 
         $product = Product::create($data);
 
+        $this->keepFeaturedProduct($product);
+
         $this->storeImages($request, $product);
 
         return redirect()->route('admin.products.index')->with('success', 'Produit créé.');
@@ -53,6 +55,8 @@ class ProductController extends Controller
     {
         $data = $this->validated($request);
         $product->update($data);
+
+        $this->keepFeaturedProduct($product);
 
         $this->storeImages($request, $product);
 
@@ -106,10 +110,12 @@ class ProductController extends Controller
             'date_arrivage_estimee' => 'nullable|date',
             'bascule_auto_precommande' => 'sometimes|boolean',
             'is_active' => 'sometimes|boolean',
+            'is_featured' => 'sometimes|boolean',
         ]);
 
         $data['bascule_auto_precommande'] = $request->boolean('bascule_auto_precommande');
         $data['is_active'] = $request->boolean('is_active');
+        $data['is_featured'] = $request->boolean('is_featured');
 
         if ($data['type'] === 'precommande') {
             $data['stock'] = 0;
@@ -122,6 +128,15 @@ class ProductController extends Controller
         }
 
         return $data;
+    }
+
+    protected function keepFeaturedProduct(Product $product): void
+    {
+        if (! $product->is_featured) {
+            return;
+        }
+
+        Product::where('id', '!=', $product->id)->update(['is_featured' => false]);
     }
 
     protected function storeImages(Request $request, Product $product): void

@@ -9,12 +9,13 @@ class Product extends Model
     protected $fillable = [
         'category_id', 'name', 'slug', 'description', 'price', 'stock',
         'type', 'acompte_pourcent', 'date_cloture_precommande', 'date_expedition_prevue', 'date_arrivage_estimee',
-        'bascule_auto_precommande', 'is_active',
+        'bascule_auto_precommande', 'is_active', 'is_featured',
     ];
 
     protected $casts = [
         'bascule_auto_precommande' => 'boolean',
         'is_active' => 'boolean',
+        'is_featured' => 'boolean',
         'date_cloture_precommande' => 'date',
         'date_expedition_prevue' => 'date',
         'date_arrivage_estimee' => 'date',
