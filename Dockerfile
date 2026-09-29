@@ -46,4 +46,4 @@ RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framewor
 
 EXPOSE 10000
 
-CMD ["sh", "-c", "set -e; : \"${PORT:=10000}\"; sed -ri \"s/Listen 80/Listen ${PORT}/\" /etc/apache2/ports.conf; sed -ri \"s/<VirtualHost \\*:80>/<VirtualHost *:${PORT}>/\" /etc/apache2/sites-available/000-default.conf; php artisan migrate --force; if [ ! -e public/storage ]; then php artisan storage:link; fi; php artisan config:cache; php artisan route:cache; php artisan view:cache; exec apache2-foreground"]
+CMD ["sh", "-c", "set -e; : \"${PORT:=10000}\"; sed -ri \"s/Listen 80/Listen ${PORT}/\" /etc/apache2/ports.conf; sed -ri \"s/<VirtualHost \\*:80>/<VirtualHost *:${PORT}>/\" /etc/apache2/sites-available/000-default.conf; php artisan migrate --force; php artisan db:seed --force; if [ ! -e public/storage ]; then php artisan storage:link; fi; php artisan config:cache; php artisan route:cache; php artisan view:cache; exec apache2-foreground"]
