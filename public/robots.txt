@@ -1,0 +1,11 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /mon-compte
+Disallow: /commandes
+Disallow: /panier
+Disallow: /commande
+Disallow: /connexion
+Disallow: /inscription
+Disallow: /verification-email
+
+Sitemap: /sitemap.xml

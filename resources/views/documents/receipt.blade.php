@@ -1,0 +1,1 @@
+@include('documents.invoice', ['order' => $order])
