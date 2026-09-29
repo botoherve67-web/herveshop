@@ -27,7 +27,7 @@ class OrderController extends Controller
 
     public function checkout()
     {
-        $cart = session('cart', []);
+        $cart = $this->cleanCart();
         if (empty($cart)) {
             return redirect()->route('cart.index');
         }
@@ -68,7 +68,7 @@ class OrderController extends Controller
             'code_promo' => 'nullable|string',
         ]);
 
-        $cart = session('cart', []);
+        $cart = $this->cleanCart();
         if (empty($cart)) {
             return redirect()->route('cart.index');
         }
@@ -81,7 +81,10 @@ class OrderController extends Controller
             $soldeTotal = 0;
 
             foreach ($cart as $productId => $quantity) {
-                $product = Product::findOrFail($productId);
+                $product = Product::find($productId);
+                if (! $product) {
+                    continue;
+                }
                 $lineTotal = $product->price * $quantity;
                 $sousTotal += $lineTotal;
 
@@ -216,6 +219,24 @@ class OrderController extends Controller
     protected function authorizeOwner(Order $order): void
     {
         abort_unless($order->user_id === Auth::id() || Auth::user()?->is_admin, 403);
+    }
+
+    protected function cleanCart(): array
+    {
+        $cart = session('cart', []);
+        $validCart = [];
+
+        foreach ($cart as $productId => $quantity) {
+            if (Product::whereKey($productId)->exists() && (int) $quantity > 0) {
+                $validCart[$productId] = (int) $quantity;
+            }
+        }
+
+        if ($validCart !== $cart) {
+            session()->put('cart', $validCart);
+        }
+
+        return $validCart;
     }
 
     protected function notifyAdmins(Order $order, string $event): void
