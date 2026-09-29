@@ -18,15 +18,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::firstOrCreate(
-            ['email' => 'admin@hervershop.tg'],
+        $adminPassword = env('ADMIN_PASSWORD');
+
+        if ($adminPassword) {
+            User::firstOrCreate(
+                ['email' => env('ADMIN_EMAIL', 'admin@hervershop.tg')],
             [
                 'name' => 'Hervé (Admin)',
-                'password' => Hash::make('changeme123'),
+                'password' => Hash::make($adminPassword),
                 'is_admin' => true,
                 'email_verified_at' => now(),
             ]
-        );
+            );
+        }
 
         $categories = [
             'Électronique & téléphones',

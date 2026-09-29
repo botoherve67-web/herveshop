@@ -6,6 +6,7 @@ use App\Mail\ContactFormMail;
 use App\Models\AppSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class ContactController extends Controller
 {
@@ -41,7 +42,13 @@ class ContactController extends Controller
             $data['message']
         );
 
-        Mail::to($recipient)->send($mail);
+        try {
+            Mail::to($recipient)->send($mail);
+        } catch (\Throwable $exception) {
+            Log::error('Message contact non envoye.', ['error' => $exception->getMessage()]);
+
+            return back()->withInput()->withErrors(['email' => 'Message temporairement indisponible.']);
+        }
 
         return redirect()->route('contact.index')->with('success', 'Votre message a bien été envoyé. Nous vous répondrons dans les plus brefs délais.');
     }

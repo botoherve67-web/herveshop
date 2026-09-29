@@ -8,6 +8,7 @@ use App\Models\OrderStatusHistory;
 use App\Notifications\OrderUpdateNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
@@ -80,7 +81,11 @@ class OrderController extends Controller
             $this->recordHistory($order, 'commande', $oldStatus, $order->statut, $request->remarque_admin);
             $event = $order->statut === 'annulee' ? 'annulation' : ($order->statut === 'expediee' ? 'expedition' : 'statut');
             $order->load('user');
-            $order->user->notify(new OrderUpdateNotification($order, $event, $request->remarque_admin));
+            try {
+                $order->user->notify(new OrderUpdateNotification($order, $event, $request->remarque_admin));
+            } catch (\Throwable $exception) {
+                Log::error('Notification statut non envoyee.', ['order_id' => $order->id, 'error' => $exception->getMessage()]);
+            }
         }
 
         // Notification email au client déclenchée ici (voir App\Notifications\OrderStatusUpdated)
@@ -109,7 +114,11 @@ class OrderController extends Controller
         if ($order->wasChanged('statut_paiement') || array_key_exists('remarque_admin', $data)) {
             $this->recordHistory($order, 'paiement', $oldPaymentStatus, $order->statut_paiement, $request->remarque_admin);
             $order->load('user');
-            $order->user->notify(new OrderUpdateNotification($order, 'paiement', $request->remarque_admin));
+            try {
+                $order->user->notify(new OrderUpdateNotification($order, 'paiement', $request->remarque_admin));
+            } catch (\Throwable $exception) {
+                Log::error('Notification paiement non envoyee.', ['order_id' => $order->id, 'error' => $exception->getMessage()]);
+            }
         }
 
         return back()->with('success', 'Paiement mis à jour.');

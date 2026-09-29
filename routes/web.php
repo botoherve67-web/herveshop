@@ -32,7 +32,7 @@ Route::get('/produits', [ProductController::class, 'index'])->name('products.ind
 Route::get('/categories', [CategoryPageController::class, 'index'])->name('categories.index');
 Route::get('/a-propos', [AboutController::class, 'index'])->name('about.index');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
-Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:5,10')->name('contact.store');
 Route::get('/produits/{slug}', [ProductController::class, 'show'])->name('products.show');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/comparer', [CompareController::class, 'index'])->name('compare.index');
@@ -47,11 +47,11 @@ Route::delete('/panier/{product}', [CartController::class, 'remove'])->name('car
 
 Route::middleware('guest')->group(function () {
     Route::get('/connexion', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/connexion', [AuthController::class, 'login']);
+    Route::post('/connexion', [AuthController::class, 'login'])->middleware('throttle:10,1');
     Route::get('/inscription', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/inscription', [AuthController::class, 'register']);
+    Route::post('/inscription', [AuthController::class, 'register'])->middleware('throttle:5,10');
     Route::get('/mot-de-passe-oublie', [PasswordResetController::class, 'showForgotForm'])->name('password.request');
-    Route::post('/mot-de-passe-oublie', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+    Route::post('/mot-de-passe-oublie', [PasswordResetController::class, 'sendResetLink'])->middleware('throttle:5,10')->name('password.email');
     Route::get('/nouveau-mot-de-passe/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
     Route::post('/nouveau-mot-de-passe', [PasswordResetController::class, 'reset'])->name('password.update');
 });

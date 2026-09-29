@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
 {
@@ -82,9 +83,12 @@ class OrderController extends Controller
             $soldeTotal = 0;
 
             foreach ($cart as $productId => $quantity) {
-                $product = Product::find($productId);
+                $product = Product::whereKey($productId)->lockForUpdate()->first();
                 if (! $product) {
                     continue;
+                }
+                if ($product->type === 'stock' && ! $product->estEnPrecommande() && $quantity > $product->stock) {
+                    throw ValidationException::withMessages(['cart' => 'Stock insuffisant pour : '.$product->name.'.']);
                 }
                 $lineTotal = $product->price * $quantity;
                 $sousTotal += $lineTotal;
@@ -100,6 +104,10 @@ class OrderController extends Controller
                     'quantity' => $quantity,
                     'unit_price' => $product->price,
                 ];
+            }
+
+            if ($items === []) {
+                throw ValidationException::withMessages(['cart' => 'Panier vide ou produits indisponibles.']);
             }
 
             $reduction = 0;
@@ -157,7 +165,7 @@ class OrderController extends Controller
                     'quantity' => $item['quantity'],
                 ]);
 
-                if ($item['product']->type === 'stock' && $item['product']->stock > 0) {
+                if ($item['product']->type === 'stock' && ! $item['product']->estEnPrecommande()) {
                     $item['product']->decrement('stock', $item['quantity']);
                 }
             }
