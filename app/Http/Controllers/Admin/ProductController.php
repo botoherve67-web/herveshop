@@ -98,9 +98,9 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|integer|min:0',
-            'stock' => 'required|integer|min:0',
             'type' => 'required|in:stock,precommande',
-            'acompte_pourcent' => 'required|integer|min:0|max:100',
+            'stock' => 'nullable|integer|min:1|required_if:type,stock',
+            'acompte_pourcent' => 'nullable|integer|min:0|max:100|required_if:type,precommande',
             'date_cloture_precommande' => 'nullable|date',
             'date_expedition_prevue' => 'nullable|date',
             'date_arrivage_estimee' => 'nullable|date',
@@ -110,6 +110,16 @@ class ProductController extends Controller
 
         $data['bascule_auto_precommande'] = $request->boolean('bascule_auto_precommande');
         $data['is_active'] = $request->boolean('is_active');
+
+        if ($data['type'] === 'precommande') {
+            $data['stock'] = 0;
+            $data['bascule_auto_precommande'] = false;
+        } else {
+            $data['acompte_pourcent'] = 0;
+            $data['date_cloture_precommande'] = null;
+            $data['date_expedition_prevue'] = null;
+            $data['date_arrivage_estimee'] = null;
+        }
 
         return $data;
     }

@@ -5,6 +5,8 @@
 @section('admin-content')
     <h1>{{ $product->exists ? 'Modifier' : 'Nouveau' }} produit</h1>
 
+    @php($selectedType = old('type', $product->type ?: 'stock'))
+
     <form action="{{ $product->exists ? route('admin.products.update', $product) : route('admin.products.store') }}"
           method="POST" enctype="multipart/form-data" class="card">
         @csrf
@@ -34,31 +36,34 @@
         <label>Prix (FCFA)</label>
         <input type="number" name="price" value="{{ old('price', $product->price) }}" required>
 
-        <label>Stock</label>
-        <input type="number" name="stock" value="{{ old('stock', $product->stock) }}" required>
-
-        <label>Type</label>
-        <select name="type" id="type" onchange="togglePrecommande()">
-            <option value="stock" @selected(old('type', $product->type) === 'stock')>Stock</option>
-            <option value="precommande" @selected(old('type', $product->type) === 'precommande')>Précommande</option>
+        <label>Mode de vente</label>
+        <select name="type" id="type" onchange="toggleProductMode()" required>
+            <option value="stock" @selected($selectedType === 'stock')>Stock disponible</option>
+            <option value="precommande" @selected($selectedType === 'precommande')>Précommande</option>
         </select>
+
+        <div id="champs_stock">
+            <label>Quantité disponible</label>
+            <input type="number" name="stock" value="{{ old('stock', $product->stock) }}" min="1" data-stock-field>
+            <small>Quantité vendable immédiatement.</small>
+        </div>
 
         <div id="champs_precommande">
             <label>Acompte (%)</label>
-            <input type="number" name="acompte_pourcent" value="{{ old('acompte_pourcent', $product->acompte_pourcent ?? 70) }}">
+            <input type="number" name="acompte_pourcent" value="{{ old('acompte_pourcent', $product->acompte_pourcent ?? 70) }}" min="0" max="100" data-precommande-field>
 
             <label>Date de clôture des précommandes</label>
-            <input type="date" name="date_cloture_precommande" value="{{ old('date_cloture_precommande', $product->date_cloture_precommande?->format('Y-m-d')) }}">
+            <input type="date" name="date_cloture_precommande" value="{{ old('date_cloture_precommande', $product->date_cloture_precommande?->format('Y-m-d')) }}" data-precommande-field>
 
             <label>Date d'expédition prévue</label>
-            <input type="date" name="date_expedition_prevue" value="{{ old('date_expedition_prevue', $product->date_expedition_prevue?->format('Y-m-d')) }}">
+            <input type="date" name="date_expedition_prevue" value="{{ old('date_expedition_prevue', $product->date_expedition_prevue?->format('Y-m-d')) }}" data-precommande-field>
 
             <label>Date d'arrivage estimée</label>
-            <input type="date" name="date_arrivage_estimee" value="{{ old('date_arrivage_estimee', $product->date_arrivage_estimee?->format('Y-m-d')) }}">
+            <input type="date" name="date_arrivage_estimee" value="{{ old('date_arrivage_estimee', $product->date_arrivage_estimee?->format('Y-m-d')) }}" data-precommande-field>
         </div>
 
         <label style="font-weight:normal;">
-            <input type="checkbox" name="bascule_auto_precommande" value="1" style="width:auto;"
+            <input id="bascule_auto_precommande" type="checkbox" name="bascule_auto_precommande" value="1" style="width:auto;"
                 @checked(old('bascule_auto_precommande', $product->exists ? $product->bascule_auto_precommande : false))>
             Bascule automatique en précommande quand stock épuisé
         </label>
@@ -101,6 +106,25 @@
     </form>
 
     <script>
+        function toggleProductMode() {
+            const isPrecommande = document.getElementById('type').value === 'precommande';
+            document.getElementById('champs_stock').hidden = isPrecommande;
+            document.getElementById('champs_precommande').hidden = !isPrecommande;
+            document.querySelectorAll('[data-stock-field]').forEach((field) => {
+                field.disabled = isPrecommande;
+            });
+            document.querySelectorAll('[data-precommande-field]').forEach((field) => {
+                field.disabled = !isPrecommande;
+            });
+
+            const autoSwitch = document.getElementById('bascule_auto_precommande');
+            autoSwitch.disabled = isPrecommande;
+            if (isPrecommande) autoSwitch.checked = false;
+        }
+
+        document.addEventListener('DOMContentLoaded', toggleProductMode);
+        document.getElementById('type').addEventListener('change', toggleProductMode);
+
         function togglePrecommande() {
             // Champs toujours visibles : utile même en stock si bascule auto active
         }
