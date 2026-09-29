@@ -39,3 +39,7 @@ services:
         value: resend
       - key: RESEND_API_KEY
         sync: false
+      - key: MAIL_FROM_ADDRESS
+        sync: false
+      - key: MAIL_FROM_NAME
+        value: HerveShop
