@@ -93,7 +93,7 @@ class ProductController extends Controller
 
     protected function validated(Request $request): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -104,9 +104,14 @@ class ProductController extends Controller
             'date_cloture_precommande' => 'nullable|date',
             'date_expedition_prevue' => 'nullable|date',
             'date_arrivage_estimee' => 'nullable|date',
-            'bascule_auto_precommande' => 'boolean',
-            'is_active' => 'boolean',
+            'bascule_auto_precommande' => 'sometimes|boolean',
+            'is_active' => 'sometimes|boolean',
         ]);
+
+        $data['bascule_auto_precommande'] = $request->boolean('bascule_auto_precommande');
+        $data['is_active'] = $request->boolean('is_active');
+
+        return $data;
     }
 
     protected function storeImages(Request $request, Product $product): void

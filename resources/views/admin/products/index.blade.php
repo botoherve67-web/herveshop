@@ -21,6 +21,10 @@
                 @endif
                 @if($product->estEnPrecommande())
                     <span class="badge-precommande">Précommande</span>
+                @elseif($product->stock > 0)
+                    <span class="badge-stock">Stock</span>
+                @else
+                    <span class="badge-rupture">Rupture</span>
                 @endif
             </div>
             <div style="display:flex; gap:8px;">

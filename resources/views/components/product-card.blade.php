@@ -12,6 +12,10 @@
     <p class="prix">{{ number_format($product->price, 0, ',', ' ') }} FCFA</p>
     @if($product->estEnPrecommande())
         <span class="badge-precommande">Précommande</span>
+    @elseif($product->stock > 0)
+        <span class="badge-stock">En stock</span>
+    @else
+        <span class="badge-rupture">Rupture</span>
     @endif
     @php($isCompared = in_array($product->id, session('compare', [])))
     <form action="{{ $isCompared ? route('compare.destroy', $product) : route('compare.store', $product) }}" method="POST" style="margin-top:8px;">

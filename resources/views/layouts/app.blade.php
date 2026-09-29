@@ -212,6 +212,14 @@
             padding: 2px 8px;
             border-radius: 12px;
         }
+        .badge-stock, .badge-rupture {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        .badge-stock { color: #087443; background: #dff7e9; }
+        .badge-rupture { color: #a33a3a; background: #fde5e5; }
         input, select, textarea {
             width: 100%;
             padding: 8px;

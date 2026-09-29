@@ -59,7 +59,7 @@
 
         <label style="font-weight:normal;">
             <input type="checkbox" name="bascule_auto_precommande" value="1" style="width:auto;"
-                @checked(old('bascule_auto_precommande', $product->bascule_auto_precommande ?? true))>
+                @checked(old('bascule_auto_precommande', $product->exists ? $product->bascule_auto_precommande : false))>
             Bascule automatique en précommande quand stock épuisé
         </label>
 
