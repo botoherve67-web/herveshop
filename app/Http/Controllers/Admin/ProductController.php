@@ -111,6 +111,8 @@ class ProductController extends Controller
             'bascule_auto_precommande' => 'sometimes|boolean',
             'is_active' => 'sometimes|boolean',
             'is_featured' => 'sometimes|boolean',
+            'images' => 'nullable|array',
+            'images.*' => 'image|max:10240',
         ]);
 
         $data['bascule_auto_precommande'] = $request->boolean('bascule_auto_precommande');

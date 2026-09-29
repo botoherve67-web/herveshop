@@ -44,6 +44,8 @@ RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framewor
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R ug+rwx storage bootstrap/cache
 
+RUN printf 'upload_max_filesize=10M\npost_max_size=12M\n' > /usr/local/etc/php/conf.d/uploads.ini
+
 EXPOSE 10000
 
 CMD ["sh", "-c", "set -e; : \"${PORT:=10000}\"; sed -ri \"s/Listen 80/Listen ${PORT}/\" /etc/apache2/ports.conf; sed -ri \"s/<VirtualHost \\*:80>/<VirtualHost *:${PORT}>/\" /etc/apache2/sites-available/000-default.conf; php artisan migrate --force; php artisan db:seed --force; if [ ! -e public/storage ]; then php artisan storage:link; fi; php artisan config:cache; php artisan route:cache; php artisan view:cache; exec apache2-foreground"]

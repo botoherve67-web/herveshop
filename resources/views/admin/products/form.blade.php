@@ -7,7 +7,7 @@
 
     @php($selectedType = old('type', $product->type ?: 'stock'))
 
-    <form action="{{ $product->exists ? route('admin.products.update', $product) : route('admin.products.store') }}"
+    <form id="product-form" action="{{ $product->exists ? route('admin.products.update', $product) : route('admin.products.store') }}"
           method="POST" enctype="multipart/form-data" class="card">
         @csrf
         @if($product->exists) @method('PUT') @endif
@@ -83,6 +83,9 @@
         <label>Images (plusieurs possibles)</label>
         <input type="file" name="images[]" multiple accept="image/*">
 
+        <button type="submit" class="btn">Enregistrer</button>
+    </form>
+
         @if($product->exists && $product->images->isNotEmpty())
             <h3>Galerie actuelle</h3>
             <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:12px; margin-bottom:16px;">
@@ -107,9 +110,6 @@
                 @endforeach
             </div>
         @endif
-
-        <button type="submit" class="btn">Enregistrer</button>
-    </form>
 
     <script>
         function toggleProductMode() {
