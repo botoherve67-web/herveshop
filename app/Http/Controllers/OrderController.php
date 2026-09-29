@@ -12,6 +12,7 @@ use App\Notifications\OrderUpdateNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -166,7 +167,14 @@ class OrderController extends Controller
 
         session()->forget('cart');
         $order->load('user');
-        $order->user->notify(new OrderUpdateNotification($order, 'commande'));
+        try {
+            $order->user->notify(new OrderUpdateNotification($order, 'commande'));
+        } catch (\Throwable $exception) {
+            Log::error('Notification client non envoyee.', [
+                'order_id' => $order->id,
+                'error' => $exception->getMessage(),
+            ]);
+        }
         $this->notifyAdmins($order, 'nouvelle_commande');
 
         return redirect()->route('orders.show', $order)->with('success', 'Commande enregistrée. Confirmez le paiement '.strtoupper($order->moyen_paiement).' pour valider.');
@@ -242,7 +250,15 @@ class OrderController extends Controller
     protected function notifyAdmins(Order $order, string $event): void
     {
         User::where('is_admin', true)->get()->each(function (User $admin) use ($order, $event) {
-            $admin->notify(new AdminOrderNotification($order, $event));
+            try {
+                $admin->notify(new AdminOrderNotification($order, $event));
+            } catch (\Throwable $exception) {
+                Log::error('Notification admin non envoyee.', [
+                    'order_id' => $order->id,
+                    'admin_id' => $admin->id,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
         });
     }
 }
