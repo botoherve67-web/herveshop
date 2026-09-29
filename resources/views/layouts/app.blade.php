@@ -136,6 +136,8 @@
         .hero-product-2 { width:42%; height:52%; top:5%; right:6%; }
         .hero-product-3 { width:35%; height:38%; bottom:2%; left:28%; }
         .hero-product-4 { width:34%; height:40%; bottom:5%; right:6%; }
+        .hero-showcase:has(.hero-product-1):not(:has(.hero-product-2)) .hero-product-1 { inset:0; width:100%; height:100%; }
+        .hero-showcase:has(.hero-product-1):not(:has(.hero-product-2)) .hero-script { display:none; }
         .hero-device { position:absolute; display:grid; place-items:center; color:#173f5f; font-weight:800; text-align:center; border-radius:18px; background:#fff; box-shadow:0 16px 24px rgba(16,46,85,.16); }
         .hero-device-phone { width:125px; height:205px; top:52px; left:14%; background:linear-gradient(145deg,#26384d,#8393a7); color:#fff; transform:rotate(-12deg); }
         .hero-device-audio { width:150px; height:100px; top:72px; right:13%; background:#fff; transform:rotate(7deg); }
