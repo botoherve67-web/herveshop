@@ -4,11 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Notifications\VerifyEmailOtpNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -60,35 +58,11 @@ class AuthController extends Controller
             'email' => $request->email,
             'whatsapp' => $request->whatsapp,
             'password' => Hash::make($request->password),
+            'email_verified_at' => now(),
         ]);
 
         Auth::login($user);
-        $this->sendEmailOtp($user);
-
-        return redirect()->route('verification.notice')->with('success', 'Compte cree. Entrez le code recu par mail.');
-    }
-
-    public static function sendEmailOtp(User $user): void
-    {
-        $otp = (string) random_int(100000, 999999);
-
-        $user->forceFill([
-            'email_verification_otp' => Hash::make($otp),
-            'email_verification_otp_expires_at' => now()->addMinutes(10),
-            'email_verification_otp_sent_at' => now(),
-            'email_verification_otp_attempts' => 0,
-            'email_verification_otp_locked_until' => null,
-        ])->save();
-
-        try {
-            $user->notify(new VerifyEmailOtpNotification($otp));
-        } catch (\Throwable $exception) {
-            Log::error('Code OTP email non envoye.', [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'error' => $exception->getMessage(),
-            ]);
-        }
+        return redirect()->route('account.dashboard')->with('success', 'Compte cree.');
     }
 
     public function logout(Request $request)

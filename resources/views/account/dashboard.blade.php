@@ -37,7 +37,7 @@
                 <div class="profile-stat"><strong>{{ $ordersCount }}</strong><span>Commandes</span><a href="{{ route('orders.index') }}">Voir</a></div>
                 <div class="profile-stat"><strong>{{ $wishlistCount }}</strong><span>Favoris</span><a href="{{ route('wishlist.index') }}">Voir</a></div>
                 <div class="profile-stat"><strong>{{ $reviewsCount }}</strong><span>Avis</span><a href="{{ route('products.index') }}">Voir</a></div>
-                <div class="profile-stat"><strong>{{ $user->email_verified_at ? 'OK' : 'Non' }}</strong><span>Email verifie</span><a href="{{ $user->email_verified_at ? '#profile-settings' : route('verification.notice') }}">Gerer</a></div>
+                <div class="profile-stat"><strong>OK</strong><span>Email actif</span><a href="#profile-settings">Gerer</a></div>
             </div>
 
             <div class="profile-panel" id="profile-settings">

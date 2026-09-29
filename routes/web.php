@@ -14,7 +14,6 @@ use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
-use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryPageController;
 use App\Http\Controllers\CompareController;
@@ -59,24 +58,6 @@ Route::middleware('guest')->group(function () {
 Route::post('/deconnexion', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/verification-email', function () {
-        return view('auth.verify-email');
-    })->name('verification.notice');
-    Route::post('/verification-email', [VerifyEmailController::class, 'verifyOtp'])
-        ->middleware('throttle:6,1')
-        ->name('verification.otp');
-    Route::patch('/verification-email/email', [VerifyEmailController::class, 'updateEmail'])
-        ->middleware('throttle:3,1')
-        ->name('verification.email.update');
-    Route::get('/verification-email/{id}/{hash}', VerifyEmailController::class)
-        ->middleware(['signed', 'throttle:6,1'])
-        ->name('verification.verify');
-    Route::post('/verification-email/renvoyer', [VerifyEmailController::class, 'resendOtp'])
-        ->middleware('throttle:6,1')
-        ->name('verification.send');
-});
-
-Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/commande', [OrderController::class, 'checkout'])->name('checkout.index');
     Route::post('/commande', [OrderController::class, 'store'])->name('orders.store');
     Route::get('/commandes', [OrderController::class, 'myOrders'])->name('orders.index');
