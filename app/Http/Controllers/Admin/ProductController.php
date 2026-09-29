@@ -36,6 +36,7 @@ class ProductController extends Controller
         $data['slug'] = Str::slug($data['name']).'-'.Str::random(5);
 
         $product = Product::create($data);
+        $this->syncFeaturedProduct($product);
 
         $this->storeImages($request, $product);
 
@@ -53,6 +54,7 @@ class ProductController extends Controller
     {
         $data = $this->validated($request);
         $product->update($data);
+        $this->syncFeaturedProduct($product);
 
         $this->storeImages($request, $product);
 
@@ -106,12 +108,14 @@ class ProductController extends Controller
             'date_arrivage_estimee' => 'nullable|date',
             'bascule_auto_precommande' => 'sometimes|boolean',
             'is_active' => 'sometimes|boolean',
+            'is_featured' => 'sometimes|boolean',
             'images' => 'nullable|array',
             'images.*' => 'image|max:10240',
         ]);
 
         $data['bascule_auto_precommande'] = $request->boolean('bascule_auto_precommande');
         $data['is_active'] = $request->boolean('is_active');
+        $data['is_featured'] = $request->boolean('is_featured') && $data['is_active'];
 
         if ($data['type'] === 'precommande') {
             $data['stock'] = 0;
@@ -124,6 +128,15 @@ class ProductController extends Controller
         }
 
         return $data;
+    }
+
+    protected function syncFeaturedProduct(Product $product): void
+    {
+        if (! $product->is_featured) {
+            return;
+        }
+
+        Product::where('id', '!=', $product->id)->update(['is_featured' => false]);
     }
 
     protected function storeImages(Request $request, Product $product): void

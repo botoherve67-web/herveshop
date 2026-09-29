@@ -74,6 +74,12 @@
             Produit actif (visible sur le site)
         </label>
 
+        <label style="font-weight:normal;">
+            <input type="checkbox" name="is_featured" value="1" style="width:auto;"
+                @checked(old('is_featured', $product->is_featured ?? false))>
+            Mettre en avant sur l'accueil
+        </label>
+
         <label>Images (plusieurs possibles)</label>
         <input type="file" name="images[]" multiple accept="image/*">
 
