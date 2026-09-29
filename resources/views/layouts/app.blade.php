@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'HerveShop')</title>
     <meta name="description" content="@yield('meta_description', 'HerveShop, votre boutique en ligne en Afrique de l’Ouest : produits disponibles, précommandes et livraison.')">
@@ -341,5 +342,17 @@
         </div>
         <div class="footer-bottom"><span>&copy; {{ date('Y') }} HerveShop. Tous droits réservés.</span><span>Vos envies, notre priorité — HerveShop</span></div>
     </footer>
+    <script>
+        document.addEventListener('click', function (event) {
+            const link = event.target.closest('a[href]');
+            if (!link || link.href.startsWith('javascript:')) return;
+            fetch('{{ route('analytics.click') }}', {
+                method: 'POST',
+                keepalive: true,
+                headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content},
+                body: JSON.stringify({target: link.href})
+            }).catch(() => {});
+        });
+    </script>
 </body>
 </html>

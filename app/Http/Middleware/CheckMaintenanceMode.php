@@ -27,7 +27,6 @@ class CheckMaintenanceMode
             || $request->is('admin/*')
             || $request->is('connexion*')
             || $request->is('inscription*')
-            || $request->is('verification-email*')
             || $request->is('up');
     }
 }

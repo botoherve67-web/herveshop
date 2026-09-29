@@ -3,6 +3,7 @@
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ErrorLogController;
@@ -33,6 +34,7 @@ Route::get('/categories', [CategoryPageController::class, 'index'])->name('categ
 Route::get('/a-propos', [AboutController::class, 'index'])->name('about.index');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
 Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:5,10')->name('contact.store');
+Route::post('/analytics/click', [AnalyticsController::class, 'click'])->middleware('throttle:60,1')->name('analytics.click');
 Route::get('/produits/{slug}', [ProductController::class, 'show'])->name('products.show');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/comparer', [CompareController::class, 'index'])->name('compare.index');
@@ -108,6 +110,7 @@ Route::middleware(['auth', 'admin', 'admin.activity'])->prefix('admin')->name('a
     });
 
     Route::middleware('admin:super_admin')->group(function () {
+        Route::get('/statistiques', [AnalyticsController::class, 'index'])->name('analytics.index');
         Route::get('/clients', [AdminUserController::class, 'index'])->name('users.index');
         Route::get('/clients/export', [AdminUserController::class, 'export'])->name('users.export');
         Route::get('/clients/{user}', [AdminUserController::class, 'show'])->name('users.show');

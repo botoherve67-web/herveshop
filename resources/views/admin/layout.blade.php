@@ -20,6 +20,7 @@
                     <a href="{{ route('admin.reviews.index') }}" style="display:block; margin-top:10px;"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-4px; margin-right:6px;"><path fill="currentColor" d="M4 4h16v13H8l-4 4V4Zm3 4v2h10V8H7Zm0 4v2h7v-2H7Z"/></svg>Avis clients</a>
                     <a href="{{ route('admin.activity.index') }}" style="display:block; margin-top:10px;">Historique des actions</a>
                     <a href="{{ route('admin.errors.index') }}" style="display:block; margin-top:10px;">Journal des erreurs</a>
+                    <a href="{{ route('admin.analytics.index') }}" style="display:block; margin-top:10px;">Statistiques visiteurs</a>
                     <a href="{{ route('admin.maintenance.edit') }}" style="display:block; margin-top:10px;">Mode maintenance</a>
                 @endif
             </div>

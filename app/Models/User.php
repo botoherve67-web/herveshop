@@ -13,7 +13,7 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    protected $hidden = ['password', 'remember_token', 'email_verification_otp'];
+    protected $hidden = ['password', 'remember_token'];
 
     protected $fillable = ['name', 'email', 'whatsapp', 'password', 'address', 'zone', 'birth_date', 'gender', 'delivery_notes', 'is_active'];
 
@@ -37,9 +37,6 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'email_verification_otp_expires_at' => 'datetime',
-            'email_verification_otp_sent_at' => 'datetime',
-            'email_verification_otp_locked_until' => 'datetime',
             'birth_date' => 'date',
             'password' => 'hashed',
             'is_admin' => 'boolean',

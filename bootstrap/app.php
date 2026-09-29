@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->trustProxies(at: '*');
         $middleware->append(\App\Http\Middleware\CheckMaintenanceMode::class);
+        $middleware->append(\App\Http\Middleware\TrackAnalytics::class);
         $middleware->alias([
             'admin' => \App\Http\Middleware\IsAdmin::class,
             'admin.activity' => \App\Http\Middleware\LogAdminActivity::class,

@@ -55,3 +55,17 @@ services:
         sync: false
       - key: MAIL_FROM_NAME
         value: HerveShop
+      - key: MEDIA_DRIVER
+        value: s3
+      - key: MEDIA_URL
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_DEFAULT_REGION
+        sync: false
+      - key: AWS_BUCKET
+        sync: false
+      - key: AWS_ENDPOINT
+        sync: false

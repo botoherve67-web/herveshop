@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class ProductImage extends Model
 {
@@ -11,6 +12,11 @@ class ProductImage extends Model
     protected $casts = [
         'is_primary' => 'boolean',
     ];
+
+    public function url(): string
+    {
+        return Storage::disk('media')->url($this->path);
+    }
 
     public function product()
     {

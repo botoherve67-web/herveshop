@@ -83,7 +83,7 @@ class ProductController extends Controller
         abort_unless($image->product_id === $product->id, 404);
 
         $wasPrimary = $image->is_primary;
-        Storage::disk('public')->delete($image->path);
+        Storage::disk('media')->delete($image->path);
         $image->delete();
 
         if ($wasPrimary && ($replacement = $product->images()->first())) {
@@ -153,7 +153,7 @@ class ProductController extends Controller
         }
 
         foreach ($request->file('images') as $file) {
-            $path = $file->store('products', 'public');
+            $path = $file->store('products', 'media');
             $product->images()->create([
                 'path' => $path,
                 'position' => $position++,
