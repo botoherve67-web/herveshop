@@ -129,10 +129,6 @@
         .hero-promises b { color:#0969ed; font-size:1.1rem; margin-right:4px; }
         .hero-promises small { color:#6b7c93; font-size:.65rem; font-weight:400; }
         .hero-showcase { position:relative; min-height:390px; background:radial-gradient(circle at 50% 50%,#fff 0,#eef6f8 54%,#dceef8 100%); }
-        .hero-featured-product { position:absolute; inset:0; display:grid; place-items:center; padding:22px; color:#173f5f; }
-        .hero-featured-product img { width:100%; height:100%; object-fit:contain; mix-blend-mode:multiply; filter:drop-shadow(0 18px 14px rgba(16,46,85,.2)); transition:transform .25s; }
-        .hero-featured-product:hover img { transform:scale(1.04); }
-        .hero-featured-product span { position:absolute; right:18px; bottom:16px; max-width:70%; padding:8px 12px; border-radius:6px; color:#173f5f; background:rgba(255,255,255,.9); font-size:.72rem; font-weight:700; }
         .hero-product { position:absolute; display:grid; place-items:center; width:44%; height:44%; transition:transform .2s; }
         .hero-product:hover { transform:translateY(-5px) scale(1.03); }
         .hero-product img { width:100%; height:100%; object-fit:contain; mix-blend-mode:multiply; filter:drop-shadow(0 14px 12px rgba(16,46,85,.15)); }
