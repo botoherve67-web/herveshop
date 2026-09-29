@@ -56,7 +56,7 @@ services:
       - key: MAIL_FROM_NAME
         value: HerveShop
       - key: MEDIA_DRIVER
-        value: s3
+        value: local
       - key: MEDIA_URL
         sync: false
       - key: AWS_ACCESS_KEY_ID
