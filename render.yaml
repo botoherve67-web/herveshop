@@ -36,8 +36,18 @@ services:
       - key: QUEUE_CONNECTION
         value: database
       - key: MAIL_MAILER
-        value: resend
-      - key: RESEND_API_KEY
+        value: smtp
+      - key: MAIL_SCHEME
+        value: null
+      - key: MAIL_HOST
+        value: in-v3.mailjet.com
+      - key: MAIL_PORT
+        value: "587"
+      - key: MAIL_ENCRYPTION
+        value: tls
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
         sync: false
       - key: MAIL_FROM_ADDRESS
         sync: false
