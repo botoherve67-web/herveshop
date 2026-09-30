@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         $adminPassword = env('ADMIN_PASSWORD');
 
         if ($adminPassword) {
-            User::firstOrCreate(
+            User::updateOrCreate(
                 ['email' => env('ADMIN_EMAIL', 'admin@hervershop.tg')],
             [
                 'name' => 'Hervé (Admin)',
