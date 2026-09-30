@@ -57,6 +57,8 @@ services:
         value: HerveShop
       - key: GOOGLE_TAG_ID
         value: G-MXM8MXYC04
+      - key: GOOGLE_ADSENSE_CLIENT
+        value: ca-pub-4481147664302185
       - key: GOOGLE_ADS_CONVERSION_ID
         sync: false
       - key: GOOGLE_ADS_CONVERSION_LABEL

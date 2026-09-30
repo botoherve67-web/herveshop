@@ -15,6 +15,11 @@
             @endif
         </script>
     @endif
+    @if(config('services.google.adsense_client'))
+        <script async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ config('services.google.adsense_client') }}"
+            crossorigin="anonymous"></script>
+    @endif
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'HerveShop')</title>
     <meta name="description" content="@yield('meta_description', 'HerveShop, votre boutique en ligne en Afrique de l’Ouest : produits disponibles, précommandes et livraison.')">
