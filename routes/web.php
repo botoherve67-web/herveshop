@@ -116,6 +116,7 @@ Route::middleware(['auth', 'admin', 'admin.activity'])->prefix('admin')->name('a
         Route::get('/clients/{user}', [AdminUserController::class, 'show'])->name('users.show');
         Route::patch('/clients/{user}/statut', [AdminUserController::class, 'toggleStatus'])->name('users.status');
         Route::patch('/clients/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
+        Route::patch('/clients/{user}/mot-de-passe', [AdminUserController::class, 'resetPassword'])->name('users.password');
 
         Route::get('/codes-promo', [AdminPromoCodeController::class, 'index'])->name('promo-codes.index');
         Route::post('/codes-promo', [AdminPromoCodeController::class, 'store'])->name('promo-codes.store');

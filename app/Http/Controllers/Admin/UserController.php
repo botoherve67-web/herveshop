@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -85,5 +86,15 @@ class UserController extends Controller
         $user->save();
 
         return back()->with('success', 'Rôle mis à jour.');
+    }
+    public function resetPassword(Request $request, User $user)
+    {
+        $data = $request->validate([
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user->update(['password' => Hash::make($data['password'])]);
+
+        return back()->with('success', 'Mot de passe réinitialisé.');
     }
 }
