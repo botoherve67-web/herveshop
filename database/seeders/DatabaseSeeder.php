@@ -21,8 +21,13 @@ class DatabaseSeeder extends Seeder
         $adminPassword = env('ADMIN_PASSWORD');
 
         if ($adminPassword) {
+            $adminEmail = env('ADMIN_EMAIL', 'admin@hervershop.tg');
+            User::where('is_admin', true)
+                ->where('email', '!=', $adminEmail)
+                ->update(['is_admin' => false, 'admin_role' => null]);
+
             User::updateOrCreate(
-                ['email' => env('ADMIN_EMAIL', 'admin@hervershop.tg')],
+                ['email' => $adminEmail],
             [
                 'name' => 'Hervé (Admin)',
                 'password' => Hash::make($adminPassword),
