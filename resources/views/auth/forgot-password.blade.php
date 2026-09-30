@@ -9,8 +9,9 @@
         @csrf
         <label>Email</label>
         <input type="email" name="email" value="{{ old('email') }}" required>
-        <button type="submit" class="btn" style="width:100%;">Recevoir le lien</button>
+        <button type="submit" class="btn" style="width:100%;">Demander validation admin</button>
     </form>
 
+    <p style="margin-top:14px;"><a href="{{ route('password.reset.manual') }}">Demande déjà approuvée ? Modifier le mot de passe</a></p>
     <p style="margin-top:14px;"><a href="{{ route('login') }}">Retour connexion</a></p>
 @endsection

@@ -58,4 +58,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(WishlistItem::class);
     }
+
+    public function passwordResetRequests()
+    {
+        return $this->hasMany(PasswordResetRequest::class);
+    }
 }

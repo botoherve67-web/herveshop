@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Auth\Events\PasswordReset;
+use App\Models\PasswordResetRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 
 class PasswordResetController extends Controller
@@ -23,13 +22,13 @@ class PasswordResetController extends Controller
             'email' => ['required', 'email'],
         ]);
 
-        $status = Password::sendResetLink($request->only('email'));
-
-        if ($status === Password::RESET_LINK_SENT) {
-            return back()->with('success', 'Lien de reinitialisation envoye par mail.');
+        $user = User::where('email', $request->email)->first();
+        if ($user) {
+            PasswordResetRequest::where('user_id', $user->id)->where('status', 'pending')->update(['status' => 'cancelled']);
+            PasswordResetRequest::create(['user_id' => $user->id]);
         }
 
-        return back()->withErrors(['email' => 'Adresse e-mail introuvable.'])->onlyInput('email');
+        return back()->with('success', 'Demande envoyée. Attendez validation admin.');
     }
 
     public function showResetForm(Request $request, string $token)
@@ -40,6 +39,11 @@ class PasswordResetController extends Controller
         ]);
     }
 
+    public function showManualResetForm(Request $request)
+    {
+        return view('auth.reset-password', ['email' => $request->email, 'manual' => true]);
+    }
+
     public function reset(Request $request)
     {
         $request->validate([
@@ -48,22 +52,36 @@ class PasswordResetController extends Controller
             'password' => ['required', 'confirmed', PasswordRule::min(8)],
         ]);
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, string $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password),
-                    'remember_token' => Str::random(60),
-                ])->save();
+        return $this->completeApprovedReset($request);
+    }
 
-                event(new PasswordReset($user));
-            }
-        );
+    public function resetManually(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required', 'confirmed', PasswordRule::min(8)],
+        ]);
 
-        if ($status === Password::PASSWORD_RESET) {
+        return $this->completeApprovedReset($request);
+    }
+
+    private function completeApprovedReset(Request $request)
+    {
+        $user = User::where('email', $request->email)->first();
+        $approved = $user?->passwordResetRequests()
+            ->where('status', 'approved')
+            ->whereNull('used_at')
+            ->where('expires_at', '>', now())
+            ->latest()
+            ->first();
+
+        if ($approved) {
+            $user->forceFill(['password' => Hash::make($request->password), 'remember_token' => null])->save();
+            $approved->update(['used_at' => now()]);
+
             return redirect()->route('login')->with('success', 'Mot de passe modifie. Connectez-vous.');
         }
 
-        return back()->withErrors(['email' => 'Lien invalide ou expire.'])->onlyInput('email');
+        return back()->withErrors(['email' => 'Demande non approuvee ou expiree.'])->onlyInput('email');
     }
 }
