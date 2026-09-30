@@ -24,7 +24,7 @@ return [
 
     'google' => [
         'tag_id' => env('GOOGLE_TAG_ID'),
-        'adsense_client' => env('GOOGLE_ADSENSE_CLIENT'),
+        'adsense_client' => env('GOOGLE_ADSENSE_CLIENT', 'ca-pub-4481147664302185'),
         'ads_conversion_id' => env('GOOGLE_ADS_CONVERSION_ID'),
         'ads_conversion_label' => env('GOOGLE_ADS_CONVERSION_LABEL'),
     ],
