@@ -10,6 +10,9 @@
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', @json(config('services.google.tag_id')));
+            @if(config('services.google.ads_conversion_id') && config('services.google.ads_conversion_id') !== config('services.google.tag_id'))
+                gtag('config', @json(config('services.google.ads_conversion_id')));
+            @endif
         </script>
     @endif
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
