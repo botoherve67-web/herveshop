@@ -3,6 +3,9 @@
 @section('title', 'Commande ' . $order->reference)
 
 @section('content')
+    @if(session('order_created') && config('services.google.ads_conversion_id') && config('services.google.ads_conversion_label'))
+        <script>gtag('event', 'conversion', {send_to: @json(config('services.google.ads_conversion_id').'/'.config('services.google.ads_conversion_label')), value: {{ (float) $order->total }}, currency: 'XOF', transaction_id: @json($order->reference)});</script>
+    @endif
     @php
         $statusSteps = [
             'en_attente' => 'En attente',

@@ -185,7 +185,7 @@ class OrderController extends Controller
         }
         $this->notifyAdmins($order, 'nouvelle_commande');
 
-        return redirect()->route('orders.show', $order)->with('success', 'Commande enregistrée. Confirmez le paiement '.strtoupper($order->moyen_paiement).' pour valider.');
+        return redirect()->route('orders.show', $order)->with('success', 'Commande enregistrée. Confirmez le paiement '.strtoupper($order->moyen_paiement).' pour valider.')->with('order_created', true);
     }
 
     public function show(Order $order)

@@ -55,6 +55,12 @@ services:
         sync: false
       - key: MAIL_FROM_NAME
         value: HerveShop
+      - key: GOOGLE_TAG_ID
+        sync: false
+      - key: GOOGLE_ADS_CONVERSION_ID
+        sync: false
+      - key: GOOGLE_ADS_CONVERSION_LABEL
+        sync: false
       - key: MEDIA_DRIVER
         value: local
       - key: MEDIA_URL

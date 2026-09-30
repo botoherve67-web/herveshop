@@ -22,6 +22,12 @@ return [
         'key' => env('RESEND_API_KEY'),
     ],
 
+    'google' => [
+        'tag_id' => env('GOOGLE_TAG_ID'),
+        'ads_conversion_id' => env('GOOGLE_ADS_CONVERSION_ID'),
+        'ads_conversion_label' => env('GOOGLE_ADS_CONVERSION_LABEL'),
+    ],
+
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),

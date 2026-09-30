@@ -3,6 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @if(config('services.google.tag_id'))
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.google.tag_id') }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', @json(config('services.google.tag_id')));
+        </script>
+    @endif
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'HerveShop')</title>
     <meta name="description" content="@yield('meta_description', 'HerveShop, votre boutique en ligne en Afrique de l’Ouest : produits disponibles, précommandes et livraison.')">
