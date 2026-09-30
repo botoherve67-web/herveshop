@@ -19,6 +19,10 @@
                 <a href="{{ route('wishlist.index') }}"><x-icon name="heart" size="18"/> Favoris</a>
                 <a href="#profile-address"><x-icon name="pin" size="18"/> Adresse</a>
                 <a href="#profile-edit-form"><x-icon name="settings" size="18"/> Parametres</a>
+                <form action="{{ route('logout') }}" method="POST" style="margin-top:8px;">
+                    @csrf
+                    <button type="submit" class="profile-logout" style="display:flex;align-items:center;gap:9px;width:100%;padding:10px;border:0;border-radius:6px;color:#b42332;background:#fff4f5;font-size:.72rem;cursor:pointer;"><x-icon name="logout" size="18"/> Se déconnecter</button>
+                </form>
             </nav>
         </aside>
 
