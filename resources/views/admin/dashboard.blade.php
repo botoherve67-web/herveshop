@@ -3,7 +3,13 @@
 @section('title', 'Administration — HerveShop')
 
 @section('admin-content')
-    <h1>Tableau de bord</h1>
+    <div class="admin-page-heading">
+        <div><h1>Tableau de bord</h1><p>Vue rapide activité boutique et actions prioritaires.</p></div>
+        <div class="admin-quick-actions">
+            @if(Auth::user()->hasAdminRole('products'))<a class="btn" href="{{ route('admin.products.create') }}">Nouveau produit</a>@endif
+            @if(Auth::user()->hasAdminRole('orders'))<a class="btn outline" href="{{ route('admin.orders.index') }}">Voir commandes</a>@endif
+        </div>
+    </div>
 
     <div class="grid" style="margin-bottom:24px;">
         <div class="card"><strong>Commandes en attente</strong><p style="font-size:1.6rem;">{{ $stats['commandes_en_attente'] }}</p></div>
