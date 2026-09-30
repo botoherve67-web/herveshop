@@ -67,7 +67,21 @@
             <aside class="detail-similar"><div class="detail-similar-heading"><h2>Produits similaires</h2><a href="{{ route('products.index', ['categorie' => $product->category?->slug]) }}">Voir tout →</a></div><div class="detail-similar-grid">@foreach($similaires as $similar)<a class="detail-similar-item" href="{{ route('products.show', $similar->slug) }}">@if($similar->images->first())<img src="{{ asset('storage/'.$similar->images->first()->path) }}" alt="{{ $similar->name }}">@else<div style="height:85px;display:grid;place-items:center;background:#f4f8fc"><x-icon name="box" size="22"/></div>@endif<strong>{{ $similar->name }}</strong><small>{{ number_format($similar->price,0,',',' ') }} FCFA</small></a>@endforeach</div></aside>
         </section>
     </div>
+    <div class="detail-side-card" style="margin-top:18px;">
+        <h2><x-icon name="share" size="18"/> Partager ce produit</h2>
+        <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;">
+            <input id="product-share-url" type="text" value="{{ url()->current() }}" readonly aria-label="Lien de partage" style="flex:1;min-width:180px;margin:0;padding:8px;border:1px solid #d5e5f5;border-radius:7px;color:#6681a4;font-size:.62rem;">
+            <button type="button" class="btn outline" onclick="copyProductLink()" style="font-size:.62rem;">Copier le lien</button>
+            <a class="btn" href="https://wa.me/?text={{ rawurlencode($product->name.' - '.url()->current()) }}" target="_blank" rel="noopener" style="font-size:.62rem;">WhatsApp</a>
+        </div>
+    </div>
     <script>
+        function copyProductLink() {
+            const input = document.getElementById('product-share-url');
+            input.select();
+            navigator.clipboard?.writeText(input.value).then(() => alert('Lien copié.'));
+        }
+
         const detailImage = document.getElementById('detail-main-image');
         const detailThumbs = [...document.querySelectorAll('.detail-thumb[data-image]')];
         detailThumbs.forEach((thumb) => thumb.addEventListener('click', () => { detailImage.src = thumb.dataset.image; detailThumbs.forEach((item) => item.classList.remove('active')); thumb.classList.add('active'); }));
