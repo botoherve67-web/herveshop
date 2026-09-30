@@ -118,8 +118,10 @@
                         @csrf
                         <label for="transaction_id">Identifiant transaction</label>
                         <input id="transaction_id" type="text" name="transaction_id" required maxlength="100" placeholder="Ex : TXN123456789">
+                        @error('transaction_id')<small class="alert-error" style="display:block;margin-top:5px;">{{ $message }}</small>@enderror
                         <label for="preuve_paiement">Capture paiement</label>
                         <input id="preuve_paiement" type="file" name="preuve_paiement" accept="image/jpeg,image/png,image/webp" required>
+                        @error('preuve_paiement')<small class="alert-error" style="display:block;margin-top:5px;">{{ $message }}</small>@enderror
                         <button type="submit" class="btn" style="margin-top:12px;width:100%;">Envoyer preuve</button>
                     </form>
                 @endif

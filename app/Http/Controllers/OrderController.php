@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -210,7 +211,19 @@ class OrderController extends Controller
             Storage::disk('private')->delete($order->preuve_paiement_path);
         }
 
-        $path = $request->file('preuve_paiement')->store('payment-proofs', 'private');
+        try {
+            $path = $request->file('preuve_paiement')->store('payment-proofs', 'private');
+            if (! $path) {
+                throw new \RuntimeException('Stockage preuve paiement impossible.');
+            }
+        } catch (\Throwable $exception) {
+            Log::error('Preuve paiement non stockee.', [
+                'order_id' => $order->id,
+                'error' => $exception->getMessage(),
+            ]);
+
+            return back()->withInput()->withErrors(['preuve_paiement' => 'Upload impossible. Réessayez.']);
+        }
         $order->update([
             'transaction_id' => $data['transaction_id'],
             'preuve_paiement_path' => $path,
