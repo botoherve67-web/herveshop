@@ -12,9 +12,12 @@ class ContactController extends Controller
 {
     public function index()
     {
+        $contactEmail = AppSetting::read('contact_email')
+            ?: config('mail.contact_address')
+            ?: config('mail.from.address', 'botoherve67@gmail.com');
         $contact = [
             'phone' => AppSetting::read('contact_phone', '+228 96 29 20 39'),
-            'email' => AppSetting::read('contact_email', config('mail.from.address', 'botoherve67@gmail.com')),
+            'email' => $contactEmail,
             'address' => AppSetting::read('contact_address', 'Lomé, Togo'),
             'hours' => AppSetting::read('contact_hours', 'Lun. – Sam. : 08:00 – 18:00'),
         ];
@@ -32,7 +35,9 @@ class ContactController extends Controller
             'message' => ['required', 'string', 'min:10', 'max:2000'],
         ]);
 
-        $recipient = AppSetting::read('contact_email', config('mail.from.address', 'botoherve67@gmail.com'));
+        $recipient = AppSetting::read('contact_email')
+            ?: config('mail.contact_address')
+            ?: config('mail.from.address', 'botoherve67@gmail.com');
 
         $mail = new ContactFormMail(
             $data['name'],

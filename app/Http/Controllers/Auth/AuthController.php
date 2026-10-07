@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Notifications\WelcomeNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -62,6 +64,16 @@ class AuthController extends Controller
         ]);
 
         Auth::login($user);
+
+        try {
+            $user->notify(new WelcomeNotification);
+        } catch (\Throwable $exception) {
+            Log::error('E-mail de bienvenue non envoye.', [
+                'user_id' => $user->id,
+                'error' => $exception->getMessage(),
+            ]);
+        }
+
         return redirect()->route('account.dashboard')->with('success', 'Compte cree.');
     }
 

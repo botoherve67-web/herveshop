@@ -20,6 +20,7 @@ class ContactPageTest extends TestCase
     public function test_the_contact_form_sends_a_real_email(): void
     {
         Mail::fake();
+        config(['mail.contact_address' => 'support@example.com']);
 
         $response = $this->post('/contact', [
             'name' => 'Jean Dupont',
@@ -31,7 +32,7 @@ class ContactPageTest extends TestCase
 
         $response->assertRedirect('/contact');
         $response->assertSessionHas('success');
-        Mail::assertSentCount(1);
+        Mail::assertSent(ContactFormMail::class, fn (ContactFormMail $mail): bool => $mail->hasTo('support@example.com'));
     }
 
     public function test_the_contact_email_template_renders_without_mail_message_conflict(): void

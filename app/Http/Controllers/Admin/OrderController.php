@@ -88,8 +88,6 @@ class OrderController extends Controller
             }
         }
 
-        // Notification email au client déclenchée ici (voir App\Notifications\OrderStatusUpdated)
-
         return back()->with('success', 'Statut mis à jour.');
     }
 

@@ -18,6 +18,18 @@ php artisan storage:link
 php artisan serve
 ```
 
+## E-mails et notifications
+
+Les e-mails de contact, de bienvenue, de commande, de compte, de vérification d'adresse et de réinitialisation utilisent le mailer Laravel et l'API Resend.
+
+Sur Render Free, le trafic SMTP sortant sur les ports 25, 465 et 587 est bloqué. Utiliser l'API HTTPS Resend :
+
+1. Vérifier un domaine d'envoi dans Resend et créer une clé API.
+2. Dans les variables d'environnement Render, définir `MAIL_MAILER=resend`, `RESEND_API_KEY`, `MAIL_FROM_ADDRESS` (adresse du domaine vérifié) et `CONTACT_EMAIL` (adresse de réception des messages du formulaire).
+3. Redéployer le service après l'ajout des variables.
+
+Révoquer toute clé API partagée dans une conversation et en créer une nouvelle. Ne jamais l'ajouter au dépôt. Les erreurs d'envoi sont consignées dans les logs Render (`LOG_CHANNEL=stderr`).
+
 ## Compte admin par défaut
 
 - Email : `admin@hervershop.tg`
@@ -43,7 +55,7 @@ php artisan serve
 - Avis clients notés 1 à 5
 - Compte client avec historique commandes détaillé
 - Connexion par email ou WhatsApp + mot de passe
-- Notification email au client (à brancher : voir commentaire dans `Admin/OrderController@updateStatut`)
+- Notifications email de bienvenue, de compte, de commandes et de paiements
 - Un seul administrateur, un seul vendeur
 
 ## Non inclus au lancement (par choix du cahier des charges)

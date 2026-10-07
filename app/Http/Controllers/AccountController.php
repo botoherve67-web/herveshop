@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Notifications\ProfileUpdatedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AccountController extends Controller
 {
@@ -34,7 +35,14 @@ class AccountController extends Controller
         ]);
 
         $user->update($request->only('name', 'whatsapp', 'address', 'zone', 'birth_date', 'gender', 'delivery_notes'));
-        $user->notify(new ProfileUpdatedNotification);
+        try {
+            $user->notify(new ProfileUpdatedNotification);
+        } catch (\Throwable $exception) {
+            Log::error('Notification de profil non envoyee.', [
+                'user_id' => $user->id,
+                'error' => $exception->getMessage(),
+            ]);
+        }
 
         return back()->with('success', 'Profil mis à jour.');
     }
