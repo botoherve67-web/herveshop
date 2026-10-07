@@ -72,6 +72,6 @@ La première commande affiche le nombre de comptes concernés sans rien supprime
 ## Non inclus au lancement (par choix du cahier des charges)
 
 - API de paiement automatisée
-- Multi-facteur par OTP (la vérification de l'adresse e-mail à l'inscription est activée)
+- Vérification de l'adresse e-mail par OTP à l'inscription
 - Multi-langue (prévu plus tard)
 - Multi-vendeur
