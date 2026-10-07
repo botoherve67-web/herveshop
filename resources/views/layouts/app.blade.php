@@ -21,6 +21,14 @@
             crossorigin="anonymous"></script>
     @endif
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+    <meta name="theme-color" content="#0969ed">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="HerveShop">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="{{ asset('images/icons/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/icons/icon-192.png') }}">
     <title>@yield('title', 'HerveShop')</title>
     <meta name="description" content="@yield('meta_description', 'HerveShop, votre boutique en ligne en Afrique de l’Ouest : produits disponibles, précommandes et livraison.')">
     <meta name="robots" content="@yield('meta_robots', 'index,follow')">
@@ -301,6 +309,8 @@
             .alert-success, .alert-error { padding: 10px; }
             input, select, textarea { font-size: 16px; }
         }
+        #pwa-install { display:none; position:fixed; right:16px; bottom:16px; z-index:9999; background:var(--vert); color:#fff; border:0; border-radius:999px; padding:12px 18px; font-weight:700; font-size:.9rem; box-shadow:0 10px 24px rgba(9,105,237,.35); cursor:pointer; }
+        #pwa-install.show { display:inline-flex; align-items:center; gap:8px; }
     </style>
 </head>
 <body>
@@ -370,6 +380,28 @@
                 body: JSON.stringify({target: link.href})
             }).catch(() => {});
         });
+    </script>
+    <button id="pwa-install" type="button" aria-label="Installer l'application HerveShop">Installer l'app</button>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/sw.js', {scope: '/'}).catch(function () {});
+            });
+        }
+        (function () {
+            var deferred, btn = document.getElementById('pwa-install');
+            window.addEventListener('beforeinstallprompt', function (e) {
+                e.preventDefault();
+                deferred = e;
+                btn.classList.add('show');
+            });
+            btn.addEventListener('click', function () {
+                if (!deferred) return;
+                deferred.prompt();
+                deferred.userChoice.finally(function () { deferred = null; btn.classList.remove('show'); });
+            });
+            window.addEventListener('appinstalled', function () { btn.classList.remove('show'); });
+        })();
     </script>
 </body>
 </html>
