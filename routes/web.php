@@ -53,6 +53,9 @@ Route::middleware('guest')->group(function () {
     Route::post('/connexion', [AuthController::class, 'login'])->middleware('throttle:10,1');
     Route::get('/inscription', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/inscription', [AuthController::class, 'register'])->middleware('throttle:5,10');
+    Route::get('/verifier-email', [AuthController::class, 'showEmailVerification'])->name('email.verify');
+    Route::post('/verifier-email', [AuthController::class, 'verifyEmail'])->middleware('throttle:10,1')->name('email.verify.submit');
+    Route::post('/renvoyer-code-email', [AuthController::class, 'resendEmailVerification'])->middleware('throttle:3,1')->name('email.verify.resend');
     Route::get('/mot-de-passe-oublie', [PasswordResetController::class, 'showForgotForm'])->name('password.request');
     Route::post('/mot-de-passe-oublie', [PasswordResetController::class, 'sendResetLink'])->middleware('throttle:5,10')->name('password.email');
     Route::get('/nouveau-mot-de-passe', [PasswordResetController::class, 'showManualResetForm'])->name('password.reset.manual');
