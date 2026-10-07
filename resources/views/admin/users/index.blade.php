@@ -43,6 +43,13 @@
                 @method('PATCH')
                 <button type="submit" class="btn outline">{{ $user->is_active ? 'Désactiver' : 'Réactiver' }}</button>
             </form>
+            @unless($user->is_admin)
+                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('Supprimer définitivement ce compte client et ses commandes ? Cette action est irréversible.');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn" style="background:#b42318;">Supprimer</button>
+                </form>
+            @endunless
         </div>
     @empty
         <div class="card">Aucun client trouvé.</div>

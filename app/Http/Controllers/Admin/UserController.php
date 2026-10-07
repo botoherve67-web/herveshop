@@ -97,4 +97,13 @@ class UserController extends Controller
 
         return back()->with('success', 'Mot de passe réinitialisé.');
     }
+
+    public function destroy(User $user)
+    {
+        abort_if($user->is_admin, 422, 'Les comptes administrateurs ne peuvent pas être supprimés depuis cette page.');
+
+        $user->delete();
+
+        return redirect()->route('admin.users.index')->with('success', 'Le compte client et ses données associées ont été supprimés.');
+    }
 }

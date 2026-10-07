@@ -121,6 +121,7 @@ Route::middleware(['auth', 'admin', 'admin.activity'])->prefix('admin')->name('a
         Route::patch('/clients/{user}/statut', [AdminUserController::class, 'toggleStatus'])->name('users.status');
         Route::patch('/clients/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
         Route::patch('/clients/{user}/mot-de-passe', [AdminUserController::class, 'resetPassword'])->name('users.password');
+        Route::delete('/clients/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
         Route::get('/demandes-mots-de-passe', [PasswordResetRequestController::class, 'index'])->name('password-requests.index');
         Route::patch('/demandes-mots-de-passe/{passwordResetRequest}/approuver', [PasswordResetRequestController::class, 'approve'])->name('password-requests.approve');
         Route::patch('/demandes-mots-de-passe/{passwordResetRequest}/refuser', [PasswordResetRequestController::class, 'reject'])->name('password-requests.reject');
