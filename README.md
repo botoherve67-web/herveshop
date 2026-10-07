@@ -30,6 +30,17 @@ Sur Render Free, le trafic SMTP sortant sur les ports 25, 465 et 587 est bloqué
 
 Révoquer toute clé API partagée dans une conversation et en créer une nouvelle. Ne jamais l'ajouter au dépôt. Les erreurs d'envoi sont consignées dans les logs Render (`LOG_CHANNEL=stderr`).
 
+### Suppression ponctuelle des anciens comptes clients
+
+Les comptes clients déjà présents ne sont pas supprimés automatiquement lors du déploiement. Après avoir vérifié une sauvegarde restaurable, exécuter dans le Shell du service Render :
+
+```bash
+php artisan users:purge-customers
+php artisan users:purge-customers --force
+```
+
+La première commande affiche le nombre de comptes concernés sans rien supprimer. La seconde supprime définitivement tous les comptes non-admins et les enregistrements liés soumis aux suppressions en cascade, notamment leurs commandes. Les comptes administrateurs sont conservés. Ne lancer `--force` qu'après avoir contrôlé le résultat du dry run et confirmé la sauvegarde.
+
 ## Compte admin par défaut
 
 - Email : `admin@hervershop.tg`
@@ -61,6 +72,6 @@ Révoquer toute clé API partagée dans une conversation et en créer une nouvel
 ## Non inclus au lancement (par choix du cahier des charges)
 
 - API de paiement automatisée
-- OTP
+- Multi-facteur par OTP (la vérification de l'adresse e-mail à l'inscription est activée)
 - Multi-langue (prévu plus tard)
 - Multi-vendeur
