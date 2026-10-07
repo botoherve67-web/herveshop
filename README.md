@@ -20,7 +20,7 @@ php artisan serve
 
 ## E-mails et notifications
 
-Les e-mails de contact, de bienvenue, de commande, de compte, de vérification d'adresse et de réinitialisation utilisent le mailer Laravel et l'API Resend.
+Les e-mails de contact, de bienvenue, de commande, de compte et de réinitialisation utilisent le mailer Laravel et l'API Resend.
 
 Sur Render Free, le trafic SMTP sortant sur les ports 25, 465 et 587 est bloqué. Utiliser l'API HTTPS Resend :
 
