@@ -230,6 +230,14 @@ class OrderController extends Controller
         ]);
         $order->load('user');
         $this->notifyAdmins($order, 'preuve_paiement');
+        try {
+            $order->user->notify(new OrderUpdateNotification($order, 'preuve_paiement'));
+        } catch (\Throwable $exception) {
+            Log::error('Confirmation de preuve de paiement non envoyee.', [
+                'order_id' => $order->id,
+                'error' => $exception->getMessage(),
+            ]);
+        }
 
         return back()->with('success', 'Preuve de paiement envoyée. Elle sera vérifiée par notre équipe.');
     }

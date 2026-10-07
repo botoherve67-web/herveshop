@@ -44,6 +44,10 @@ class OrderUpdateNotification extends Notification
                 'subject' => 'Paiement mis a jour - '.$this->order->reference,
                 'intro' => 'Le statut de votre paiement est maintenant : '.$this->label($this->order->statut_paiement).'.',
             ],
+            'preuve_paiement' => [
+                'subject' => 'Preuve de paiement recue - '.$this->order->reference,
+                'intro' => 'Nous avons bien reçu votre preuve de paiement. Notre équipe va la vérifier et vous informera du résultat.',
+            ],
             'expedition' => [
                 'subject' => 'Commande expediee - '.$this->order->reference,
                 'intro' => 'Votre commande est maintenant en cours d expedition.',
