@@ -341,6 +341,111 @@
         #pwa-install-help { width:min(92vw,460px); border:0; border-radius:16px; padding:24px; color:var(--texte); box-shadow:0 18px 60px rgba(6,43,82,.25); }
         #pwa-install-help::backdrop { background:rgba(6,43,82,.55); }
         #pwa-install-help h2 { margin-top:0; }
+        .mobile-app-nav { display:none; }
+        @media (max-width: 760px) {
+            body { padding-bottom: calc(72px + env(safe-area-inset-bottom)); background:#f7faff; }
+            .utility-bar { display:none; }
+            header.site {
+                position:sticky;
+                top:0;
+                z-index:100;
+                align-items:center;
+                gap:10px 12px;
+                padding:10px 16px 12px;
+                border-bottom:1px solid rgba(21,39,69,.06);
+                box-shadow:0 5px 18px rgba(16,46,85,.08);
+            }
+            header.site .logo { flex:1 1 auto; min-width:0; }
+            header.site .logo img { height:34px !important; }
+            header.site form.search {
+                order:3;
+                flex:1 0 100%;
+                max-width:none;
+                gap:0;
+            }
+            header.site form.search input {
+                min-width:0;
+                min-height:42px;
+                margin:0;
+                border:1px solid var(--bordure);
+                border-right:0;
+                border-radius:12px 0 0 12px;
+                background:#f5f8fc;
+            }
+            header.site form.search button { min-width:46px; border-radius:0 12px 12px 0; }
+            header.site .main-nav { display:none; }
+            header.site .action-nav { flex:0 0 auto; gap:16px; margin-left:auto; }
+            header.site .action-nav a { min-width:28px; min-height:36px; justify-content:center; }
+            main { padding:20px 16px 30px; }
+            .mobile-app-nav {
+                position:fixed;
+                right:0;
+                bottom:0;
+                left:0;
+                z-index:200;
+                display:grid;
+                grid-template-columns:repeat(5,minmax(0,1fr));
+                gap:2px;
+                padding:7px 8px calc(7px + env(safe-area-inset-bottom));
+                border-top:1px solid rgba(21,39,69,.1);
+                background:rgba(255,255,255,.96);
+                box-shadow:0 -8px 24px rgba(16,46,85,.1);
+                -webkit-backdrop-filter:blur(18px);
+                backdrop-filter:blur(18px);
+            }
+            .mobile-app-nav a {
+                position:relative;
+                display:flex;
+                min-width:0;
+                min-height:48px;
+                flex-direction:column;
+                align-items:center;
+                justify-content:center;
+                gap:3px;
+                border-radius:12px;
+                color:#718096;
+                font-size:.62rem;
+                font-weight:650;
+                line-height:1;
+                -webkit-tap-highlight-color:transparent;
+            }
+            .mobile-app-nav a[aria-current="page"] { color:var(--vert); background:#edf5ff; }
+            .mobile-app-nav a:focus-visible { outline:3px solid var(--vert); outline-offset:1px; }
+            .mobile-app-nav svg { flex:0 0 auto; }
+            .mobile-app-nav .cart-badge { top:3px; right:calc(50% - 19px); }
+            #pwa-install { right:14px; bottom:calc(82px + env(safe-area-inset-bottom)); }
+            .home-hero { border-radius:0 0 22px 22px; }
+            .hero-copy { padding:30px 20px 22px; }
+            .hero-copy h1 { font-size:clamp(1.8rem,8vw,2.25rem); }
+            .hero-actions { gap:8px; margin:18px 0 20px; }
+            .hero-actions .home-btn { min-height:46px; }
+            .category-tile { min-height:112px; border-radius:14px; }
+            .home-products .card, .shop-product-grid .card { border-radius:14px; box-shadow:0 5px 16px rgba(16,46,85,.06); }
+            .home-products .product-card-image, .shop-product-grid .product-card-image { border-radius:10px !important; }
+            .home-products .product-card h3, .shop-product-grid .product-card h3 {
+                display:-webkit-box;
+                overflow:hidden;
+                -webkit-box-orient:vertical;
+                -webkit-line-clamp:2;
+                min-height:2.4em;
+            }
+            .home-products .product-card .btn, .shop-product-grid .product-card .btn { border-radius:10px; }
+            .shop-results-head { gap:8px; }
+            .shop-results-head h2 { font-size:1.15rem; }
+            footer.site-footer { margin-bottom:10px; }
+        }
+        @media (max-width: 480px) {
+            header.site { padding-right:12px; padding-left:12px; }
+            header.site .logo img { height:31px !important; }
+            header.site .action-nav { gap:12px; }
+            main { padding-right:12px; padding-left:12px; }
+            .home-hero { margin-right:-12px; margin-left:-12px; }
+            .shop-banner { margin-right:-12px; margin-left:-12px; border-radius:0 0 20px 20px; }
+            .shop-product-grid { gap:9px; }
+            .shop-product-grid .card { padding:8px; }
+            .shop-product-grid .product-card .btn { min-height:36px; padding:6px 5px; font-size:.62rem; }
+            .mobile-app-nav { padding-right:5px; padding-left:5px; }
+        }
         #pwa-install-help li { margin:10px 0; }
         #pwa-install-help button { background:var(--vert); color:#fff; border:0; border-radius:8px; padding:10px 16px; font-weight:700; cursor:pointer; }
     </style>
@@ -374,6 +479,46 @@
             <a href="{{ route('cart.index') }}" class="cart-link" aria-label="Panier" title="Panier"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5 7h14l-1 13H6L5 7Zm3-2a4 4 0 0 1 8 0h-2a2 2 0 0 0-4 0H8Z"/></svg>@if(count(session('cart', [])) > 0)<span class="cart-badge">{{ count(session('cart', [])) }}</span>@endif</a>
         </nav>
     </header>
+
+    @unless(request()->routeIs('admin.*'))
+        <nav class="mobile-app-nav" aria-label="Navigation principale">
+            <a href="{{ route('home') }}" @if(request()->routeIs('home')) aria-current="page" @endif>
+                <x-icon name="home" size="21"/>
+                <span>Accueil</span>
+            </a>
+            <a href="{{ route('products.index') }}" @if(request()->routeIs('products.index') && !request()->filled('categorie')) aria-current="page" @endif>
+                <x-icon name="bag" size="21"/>
+                <span>Boutique</span>
+            </a>
+            <a href="{{ route('categories.index') }}" @if(request()->routeIs('categories.index') || (request()->routeIs('products.index') && request()->filled('categorie'))) aria-current="page" @endif>
+                <x-icon name="grid" size="21"/>
+                <span>Catégories</span>
+            </a>
+            @auth
+                @if(!Auth::user()->is_admin)
+                    <a href="{{ route('wishlist.index') }}" @if(request()->routeIs('wishlist.index')) aria-current="page" @endif>
+                        <x-icon name="heart" size="21"/>
+                        <span>Favoris</span>
+                    </a>
+                @else
+                    <a href="{{ route('admin.dashboard') }}">
+                        <x-icon name="user" size="21"/>
+                        <span>Compte</span>
+                    </a>
+                @endif
+            @else
+                <a href="{{ route('login') }}" @if(request()->routeIs('login', 'register')) aria-current="page" @endif>
+                    <x-icon name="user" size="21"/>
+                    <span>Compte</span>
+                </a>
+            @endauth
+            <a href="{{ route('cart.index') }}" class="cart-link" @if(request()->routeIs('cart.*', 'checkout.*')) aria-current="page" @endif>
+                <x-icon name="cart" size="21"/>
+                <span>Panier</span>
+                @if(count(session('cart', [])) > 0)<span class="cart-badge">{{ count(session('cart', [])) }}</span>@endif
+            </a>
+        </nav>
+    @endunless
 
     <main>
         @if (session('success'))
