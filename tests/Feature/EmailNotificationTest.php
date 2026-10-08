@@ -12,6 +12,19 @@ use Tests\TestCase;
 
 class EmailNotificationTest extends TestCase
 {
+    public function test_login_and_registration_pages_offer_google_sign_in(): void
+    {
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertSee('data-firebase-google', false)
+            ->assertSee('Continuer avec Google');
+
+        $this->get(route('register'))
+            ->assertOk()
+            ->assertSee('data-firebase-google', false)
+            ->assertSee('Continuer avec Google');
+    }
+
     public function test_firebase_registration_creates_a_laravel_session_and_sends_a_welcome_notification(): void
     {
         Notification::fake();
