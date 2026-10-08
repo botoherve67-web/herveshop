@@ -403,5 +403,7 @@
             window.addEventListener('appinstalled', function () { btn.classList.remove('show'); });
         })();
     </script>
+    <script type="module" src="{{ asset('js/firebase.js') }}"></script>
+    <script type="module" src="{{ asset('js/firebase-auth.js') }}"></script>
 </body>
 </html>

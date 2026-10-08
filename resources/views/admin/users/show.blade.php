@@ -10,15 +10,7 @@
         <p><strong>WhatsApp :</strong> {{ $user->whatsapp ?: 'Non renseigné' }}</p>
         <p><strong>Statut :</strong> {{ $user->is_active ? 'Actif' : 'Désactivé' }}</p>
         <p><strong>Adresse :</strong> {{ $user->address ?: 'Non renseignée' }}{{ $user->zone ? ' — '.$user->zone : '' }}</p>
-        <form action="{{ route('admin.users.password', $user) }}" method="POST" style="margin:16px 0;">
-            @csrf
-            @method('PATCH')
-            <label for="admin-user-password">Nouveau mot de passe temporaire</label>
-            <input id="admin-user-password" type="password" name="password" minlength="8" required>
-            <label for="admin-user-password-confirmation">Confirmation</label>
-            <input id="admin-user-password-confirmation" type="password" name="password_confirmation" minlength="8" required>
-            <button type="submit" class="btn">Réinitialiser</button>
-        </form>
+        <p>Les mots de passe sont gérés de façon sécurisée par Firebase Authentication. Le client peut demander un lien de réinitialisation depuis l’écran de connexion.</p>
         <form action="{{ route('admin.users.status', $user) }}" method="POST">
             @csrf
             @method('PATCH')

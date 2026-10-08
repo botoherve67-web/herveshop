@@ -22,6 +22,10 @@ return [
         'key' => env('RESEND_API_KEY'),
     ],
 
+    'firebase' => [
+        'project_id' => env('FIREBASE_PROJECT_ID'),
+    ],
+
     'google' => [
         'tag_id' => env('GOOGLE_TAG_ID'),
         'adsense_client' => env('GOOGLE_ADSENSE_CLIENT', 'ca-pub-4481147664302185'),

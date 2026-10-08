@@ -30,6 +30,18 @@ Sur Render Free, le trafic SMTP sortant sur les ports 25, 465 et 587 est bloqué
 
 Révoquer toute clé API partagée dans une conversation et en créer une nouvelle. Ne jamais l'ajouter au dépôt. Les erreurs d'envoi sont consignées dans les logs Render (`LOG_CHANNEL=stderr`).
 
+## Firebase Authentication
+
+La connexion et l'inscription par e-mail/mot de passe utilisent Firebase Authentication. Laravel continue de gérer les sessions de l'application, les rôles, les commandes et les données client; les jetons Firebase sont vérifiés côté serveur avant l'ouverture d'une session Laravel. Les comptes existants sont associés à leur identité Firebase uniquement lorsque Firebase confirme que leur adresse e-mail est vérifiée. Les mots de passe Laravel ne sont pas transférables : chaque ancien utilisateur doit créer son identité Firebase avec la même adresse, vérifier celle-ci si nécessaire, puis choisir un nouveau mot de passe.
+
+Avant le déploiement :
+
+1. Dans Firebase Console > Authentication > Sign-in method, activer le fournisseur **Email/Password** et ajouter le domaine de production aux domaines autorisés.
+2. Définir `FIREBASE_PROJECT_ID=elledji` dans l'environnement Laravel (et dans `.env` en local). Aucun compte de service Firebase n'est requis pour vérifier les jetons d'identité.
+3. Restreindre la clé API Web aux domaines de l'application dans Google Cloud. La configuration Web Firebase reste publique; elle ne constitue pas un secret serveur.
+
+Firebase envoie le lien de réinitialisation du mot de passe; les anciennes demandes de réinitialisation approuvées par un administrateur ne modifient plus les mots de passe Firebase. Lorsqu'un administrateur supprime un client, son UID est bloqué par Laravel pour empêcher la recréation de son compte applicatif. L'identité correspondante reste dans Firebase Authentication : supprimez-la aussi depuis Firebase Console si elle doit être définitivement retirée ou si son adresse doit être réutilisée.
+
 ### Suppression ponctuelle des anciens comptes clients
 
 Les comptes clients déjà présents ne sont pas supprimés automatiquement lors du déploiement. Après avoir vérifié une sauvegarde restaurable, exécuter dans le Shell du service Render :

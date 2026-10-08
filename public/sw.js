@@ -1,4 +1,4 @@
-const VERSION = 'v1';
+const VERSION = 'v2';
 const STATIC_CACHE = `hervershop-static-${VERSION}`;
 const IMAGE_CACHE = `hervershop-img-${VERSION}`;
 const OFFLINE_URL = '/offline.html';

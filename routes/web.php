@@ -11,11 +11,9 @@ use App\Http\Controllers\Admin\MaintenanceController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\PromoCodeController as AdminPromoCodeController;
-use App\Http\Controllers\Admin\PasswordResetRequestController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryPageController;
 use App\Http\Controllers\CompareController;
@@ -50,13 +48,11 @@ Route::delete('/panier/{product}', [CartController::class, 'remove'])->name('car
 
 Route::middleware('guest')->group(function () {
     Route::get('/connexion', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/connexion', [AuthController::class, 'login'])->middleware('throttle:10,1');
     Route::get('/inscription', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/inscription', [AuthController::class, 'register'])->middleware('throttle:5,10');
-    Route::get('/mot-de-passe-oublie', [PasswordResetController::class, 'showForgotForm'])->name('password.request');
-    Route::post('/mot-de-passe-oublie', [PasswordResetController::class, 'sendResetLink'])->middleware('throttle:5,10')->name('password.email');
-    Route::get('/nouveau-mot-de-passe', [PasswordResetController::class, 'showManualResetForm'])->name('password.reset.manual');
-    Route::post('/nouveau-mot-de-passe', [PasswordResetController::class, 'resetManually'])->name('password.update');
+    Route::view('/mot-de-passe-oublie', 'auth.forgot-password')->name('password.request');
+    Route::post('/auth/firebase/session', [AuthController::class, 'firebaseSession'])
+        ->middleware('throttle:10,1')
+        ->name('firebase.session');
 });
 Route::post('/deconnexion', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
@@ -117,11 +113,7 @@ Route::middleware(['auth', 'admin', 'admin.activity'])->prefix('admin')->name('a
         Route::get('/clients/{user}', [AdminUserController::class, 'show'])->name('users.show');
         Route::patch('/clients/{user}/statut', [AdminUserController::class, 'toggleStatus'])->name('users.status');
         Route::patch('/clients/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
-        Route::patch('/clients/{user}/mot-de-passe', [AdminUserController::class, 'resetPassword'])->name('users.password');
         Route::delete('/clients/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
-        Route::get('/demandes-mots-de-passe', [PasswordResetRequestController::class, 'index'])->name('password-requests.index');
-        Route::patch('/demandes-mots-de-passe/{passwordResetRequest}/approuver', [PasswordResetRequestController::class, 'approve'])->name('password-requests.approve');
-        Route::patch('/demandes-mots-de-passe/{passwordResetRequest}/refuser', [PasswordResetRequestController::class, 'reject'])->name('password-requests.reject');
 
         Route::get('/codes-promo', [AdminPromoCodeController::class, 'index'])->name('promo-codes.index');
         Route::post('/codes-promo', [AdminPromoCodeController::class, 'store'])->name('promo-codes.store');

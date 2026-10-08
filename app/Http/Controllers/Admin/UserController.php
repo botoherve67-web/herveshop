@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -87,22 +87,20 @@ class UserController extends Controller
 
         return back()->with('success', 'Rôle mis à jour.');
     }
-    public function resetPassword(Request $request, User $user)
-    {
-        $data = $request->validate([
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-
-        $user->update(['password' => Hash::make($data['password'])]);
-
-        return back()->with('success', 'Mot de passe réinitialisé.');
-    }
-
     public function destroy(User $user)
     {
         abort_if($user->is_admin, 422, 'Les comptes administrateurs ne peuvent pas être supprimés depuis cette page.');
 
-        $user->delete();
+        DB::transaction(function () use ($user): void {
+            if ($user->firebase_uid !== null) {
+                DB::table('deleted_firebase_uids')->insert([
+                    'firebase_uid' => $user->firebase_uid,
+                    'deleted_at' => now(),
+                ]);
+            }
+
+            $user->delete();
+        });
 
         return redirect()->route('admin.users.index')->with('success', 'Le compte client et ses données associées ont été supprimés.');
     }

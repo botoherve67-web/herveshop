@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\ServiceProvider;
@@ -36,37 +35,5 @@ class AppServiceProvider extends ServiceProvider
                 ]);
         });
 
-        ResetPassword::toMailUsing(function (object $notifiable, string $token): MailMessage {
-            $url = route('password.reset.manual', [
-                'token' => $token,
-                'email' => $notifiable->getEmailForPasswordReset(),
-            ]);
-
-            return (new MailMessage)
-                ->subject('Reinitialiser votre mot de passe - HerveShop')
-                ->view('emails.notification', [
-                    'title' => 'Reinitialiser votre mot de passe',
-                    'greeting' => 'Bonjour '.$notifiable->name.',',
-                    'intro' => 'Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe.',
-                    'details' => [
-                        'Validite' => '60 minutes',
-                    ],
-                    'actionUrl' => $url,
-                    'actionText' => 'Modifier mon mot de passe',
-                    'closing' => 'Si vous n avez pas demande cette action, ignorez ce message.',
-                ])
-                ->text('emails.notification-text', [
-                    'title' => 'Reinitialiser votre mot de passe',
-                    'greeting' => 'Bonjour '.$notifiable->name.',',
-                    'intro' => 'Utilisez ce lien pour choisir un nouveau mot de passe.',
-                    'details' => [
-                        'Lien' => $url,
-                        'Validite' => '60 minutes',
-                    ],
-                    'actionUrl' => $url,
-                    'actionText' => 'Modifier mon mot de passe',
-                    'closing' => 'Si vous n avez pas demande cette action, ignorez ce message.',
-                ]);
-        });
     }
 }

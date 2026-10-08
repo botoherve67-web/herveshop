@@ -15,7 +15,7 @@ class User extends Authenticatable
 
     protected $hidden = ['password', 'remember_token'];
 
-    protected $fillable = ['name', 'email', 'whatsapp', 'password', 'address', 'zone', 'birth_date', 'gender', 'delivery_notes', 'is_active'];
+    protected $fillable = ['name', 'email', 'firebase_uid', 'whatsapp', 'password', 'address', 'zone', 'birth_date', 'gender', 'delivery_notes', 'is_active'];
 
     public function hasAdminRole(?string $role = null): bool
     {
@@ -59,8 +59,4 @@ class User extends Authenticatable
         return $this->hasMany(WishlistItem::class);
     }
 
-    public function passwordResetRequests()
-    {
-        return $this->hasMany(PasswordResetRequest::class);
-    }
 }
