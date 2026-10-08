@@ -22,7 +22,7 @@
     @endif
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
-    <meta name="theme-color" content="#0969ed">
+    <meta name="theme-color" content="#17233f">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="HerveShop">
@@ -342,6 +342,7 @@
         #pwa-install-help::backdrop { background:rgba(6,43,82,.55); }
         #pwa-install-help h2 { margin-top:0; }
         .mobile-app-nav { display:none; }
+        .mobile-app-help { display:none; }
         @media (min-width: 761px) {
             .shop-filter-details > summary { display:none; }
             .shop-filter-details:not([open]) > .shop-filter-content { display:block; }
@@ -775,6 +776,273 @@
             .shop-product-grid .product-card .btn { min-height:36px; padding:6px 5px; font-size:.62rem; }
             .mobile-app-nav { padding-right:5px; padding-left:5px; }
         }
+        @media (max-width: 760px) {
+            body.storefront-app {
+                --vert:#17233f;
+                --vert-fonce:#111a2d;
+                --vert-clair:#f1f3f7;
+                --surface:#f7f7f5;
+                --bordure:#e8e9eb;
+                background:#f7f7f5;
+                color:#202a3a;
+                overflow-x:hidden;
+            }
+            body.storefront-app,
+            body.admin-app { min-height:100vh; min-height:100dvh; }
+            body.storefront-app header.site,
+            body.admin-app header.site {
+                position:sticky;
+                top:0;
+                z-index:300;
+                flex-wrap:wrap;
+                padding-top:calc(9px + env(safe-area-inset-top));
+                padding-bottom:10px;
+                background:rgba(255,255,255,.97);
+                -webkit-backdrop-filter:blur(20px);
+                backdrop-filter:blur(20px);
+            }
+            body.storefront-app header.site .logo,
+            body.admin-app header.site .logo { flex:1 1 auto; }
+            body.storefront-app header.site form.search,
+            body.admin-app header.site form.search { order:3; flex:1 0 100%; }
+            body.storefront-app main,
+            body.admin-app main { min-height:calc(100dvh - 145px); }
+            body.storefront-app footer.site-footer,
+            body.admin-app footer.site-footer { display:none; }
+            body.storefront-app footer.site-footer { display:block; margin:12px 0 0; padding:0 12px 10px; color:#566071; background:transparent; text-align:left; }
+            body.storefront-app footer.site-footer .footer-grid,
+            body.storefront-app footer.site-footer .footer-bottom { display:none; }
+            body.storefront-app .mobile-app-help { display:block; }
+            body.storefront-app .mobile-app-help details {
+                overflow:hidden;
+                border:1px solid #e8e9eb;
+                border-radius:15px;
+                background:#fff;
+                box-shadow:0 4px 12px rgba(19,31,52,.035);
+            }
+            body.storefront-app .mobile-app-help summary {
+                display:flex;
+                min-height:48px;
+                align-items:center;
+                justify-content:space-between;
+                padding:12px 14px;
+                color:#17233f;
+                font-size:.78rem;
+                font-weight:700;
+                list-style:none;
+                cursor:pointer;
+            }
+            body.storefront-app .mobile-app-help summary::-webkit-details-marker { display:none; }
+            body.storefront-app .mobile-app-help summary::after { content:"+"; color:#17233f; font-size:1.15rem; }
+            body.storefront-app .mobile-app-help details[open] summary::after { content:"−"; }
+            body.storefront-app .mobile-app-help-links { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:0 14px 14px; }
+            body.storefront-app .mobile-app-help-links a {
+                display:flex;
+                min-height:40px;
+                align-items:center;
+                padding:8px 10px;
+                border-radius:10px;
+                color:#33415c;
+                background:#f6f6f4;
+                font-size:.7rem;
+                font-weight:600;
+            }
+            body.storefront-app .mobile-app-help small { display:block; padding:10px 2px 0; color:#818897; font-size:.64rem; text-align:center; }
+            body.storefront-app .mobile-app-nav,
+            body.admin-app .mobile-app-nav { grid-template-columns:repeat(auto-fit,minmax(0,1fr)); }
+            body.storefront-app .mobile-app-nav a,
+            body.admin-app .mobile-app-nav a { min-height:56px; }
+            body.storefront-app .mobile-app-nav svg,
+            body.admin-app .mobile-app-nav svg { width:21px; height:21px; }
+            body.storefront-app .mobile-app-nav a[aria-current="page"],
+            body.admin-app .mobile-app-nav a[aria-current="page"] { color:#17233f; background:transparent; }
+            body.storefront-app .mobile-app-nav a[aria-current="page"]::before,
+            body.admin-app .mobile-app-nav a[aria-current="page"]::before {
+                top:0;
+                width:25px;
+                height:3px;
+                background:#17233f;
+            }
+            body.storefront-app .mobile-app-nav .cart-badge,
+            body.admin-app .mobile-app-nav .cart-badge { top:2px; }
+            body.storefront-app main > .card {
+                border-color:#eceef1;
+                border-radius:18px;
+                box-shadow:0 5px 16px rgba(19,31,52,.045);
+            }
+            body.storefront-app main > .card[style*="max-width:900px"] {
+                max-width:none !important;
+                padding:19px !important;
+            }
+            body.storefront-app main > .card h2 { margin-top:22px; color:#17233f; font-size:1.08rem; }
+            body.storefront-app main > .card p,
+            body.storefront-app main > .card li { color:#566071; font-size:.88rem; line-height:1.7; }
+            body.storefront-app main > div[style*="overflow-x:auto"] {
+                max-width:100%;
+                overflow-x:auto;
+                border-color:#e8e9eb !important;
+                border-radius:16px !important;
+                background:#fff !important;
+                box-shadow:0 5px 16px rgba(19,31,52,.045) !important;
+                -webkit-overflow-scrolling:touch;
+                scrollbar-width:thin;
+            }
+            body.storefront-app main > div[style*="overflow-x:auto"] table { min-width:620px; }
+            body.storefront-app main > div[style*="overflow-x:auto"] th { background:#17233f !important; }
+            body.storefront-app main > div[style*="overflow-x:auto"] td,
+            body.storefront-app main > div[style*="overflow-x:auto"] tbody th { border-color:#eceef1 !important; }
+            body.storefront-app .about-hero {
+                min-height:290px;
+                margin:-20px -12px 20px;
+                padding:23px 16px;
+                border-radius:0 0 22px 22px;
+                background:linear-gradient(135deg,#fff4e9,#f5e9df);
+            }
+            body.storefront-app .about-hero > div:first-child { position:relative; z-index:2; width:78%; }
+            body.storefront-app .about-hero h1 { color:#17233f; font-size:1.8rem; }
+            body.storefront-app .about-hero h1 strong { color:#17233f; }
+            body.storefront-app .about-hero p { color:#646b75; }
+            body.storefront-app .about-hero-products { right:1%; bottom:0; width:58%; height:132px; }
+            body.storefront-app .about-script { color:#cf704c; }
+            body.storefront-app .about-story-image { border-radius:17px; }
+            body.storefront-app .about-values,
+            body.storefront-app .about-stats { border:1px solid #eceef1; border-radius:17px; background:#fff; }
+            body.storefront-app .about-stats strong { color:#17233f; }
+            body.storefront-app .about-cta { border-radius:18px; color:#fff; background:#17233f; }
+            body.storefront-app .contact-hero {
+                display:flex;
+                min-height:0;
+                flex-direction:column;
+                align-items:stretch;
+                gap:16px;
+                margin:-20px -12px 18px;
+                padding:22px 16px;
+                border-radius:0 0 22px 22px;
+                background:linear-gradient(145deg,#17233f,#2d3b59);
+            }
+            body.storefront-app .contact-hero h1 { color:#fff; font-size:1.7rem; }
+            body.storefront-app .contact-hero h1 strong { color:#fff; }
+            body.storefront-app .contact-hero .shop-kicker { color:#17233f; background:#f2dfd0; }
+            body.storefront-app .contact-hero .hero-actions { flex-direction:row; flex-wrap:wrap; }
+            body.storefront-app .contact-hero .home-btn { flex:1 1 145px; min-height:46px; }
+            body.storefront-app .contact-hero .home-btn-light { display:inline-flex; justify-content:center; }
+            body.storefront-app .contact-hero-cards { grid-template-columns:1fr; gap:8px; }
+            body.storefront-app .contact-hero .info-card {
+                display:grid;
+                grid-template-columns:38px minmax(0,1fr);
+                align-items:center;
+                gap:2px 10px;
+                padding:10px 12px;
+                border-radius:14px;
+                background:rgba(255,255,255,.08);
+                box-shadow:none;
+            }
+            body.storefront-app .contact-hero .info-icn { grid-row:span 2; width:38px; height:38px; }
+            body.storefront-app .contact-hero .info-card strong { min-width:0; overflow-wrap:anywhere; font-size:.78rem; }
+            body.storefront-app .contact-hero .info-card small { font-size:.68rem; }
+            body.storefront-app .contact-grid { grid-template-columns:1fr; gap:12px; margin-top:12px; }
+            body.storefront-app .contact-card,
+            body.storefront-app .contact-sidebar { padding:17px; border-color:#eceef1; border-radius:17px; box-shadow:0 5px 16px rgba(19,31,52,.045); }
+            body.storefront-app .contact-form { gap:14px; }
+            body.storefront-app .contact-form .two-cols { grid-template-columns:1fr; gap:12px; }
+            body.storefront-app .contact-form label { margin-bottom:5px; font-size:.8rem; }
+            body.storefront-app .contact-form input,
+            body.storefront-app .contact-form textarea { min-height:48px; border-color:#e1e4e8; border-radius:12px; background:#fafafa; font-size:16px; }
+            body.storefront-app .contact-form textarea { min-height:130px; }
+            body.storefront-app .contact-form .home-btn { width:100%; min-height:48px; border-radius:13px; background:#17233f; }
+            body.storefront-app .contact-sidebar h3 { color:#17233f; }
+            body.storefront-app .contact-meta { overflow-wrap:anywhere; }
+            body.storefront-app .contact-meta p { font-size:.78rem; }
+            body.storefront-app .admin-page-heading { gap:12px; }
+            body.admin-app {
+                --vert:#17233f;
+                --vert-fonce:#111a2d;
+                --vert-clair:#f1f3f7;
+                --bordure:#e8e9eb;
+                background:#f7f7f5;
+                color:#202a3a;
+                overflow-x:hidden;
+            }
+            body.admin-app header.site { border-bottom-color:#e8e9eb; }
+            body.admin-app header.site form.search button { background:#17233f; }
+            body.admin-app main { width:100%; padding:14px 12px 24px; }
+            body.admin-app main .admin-shell { display:flex; flex-direction:column; gap:12px !important; }
+            body.admin-app main .admin-identity {
+                align-items:center;
+                flex-direction:row;
+                gap:12px;
+                padding:14px;
+                border-color:#263553;
+                border-radius:17px;
+                background:linear-gradient(135deg,#17233f,#2d3b59);
+                box-shadow:0 8px 20px rgba(19,31,52,.12);
+            }
+            body.admin-app main .admin-identity strong { font-size:.92rem; }
+            body.admin-app main .admin-identity-actions { width:auto; flex:0 0 auto; }
+            body.admin-app main .admin-identity-actions a,
+            body.admin-app main .admin-identity-actions button { min-height:40px; padding:8px 10px; border-radius:10px; }
+            body.admin-app main .admin-sidebar { position:static; width:100% !important; }
+            body.admin-app main .admin-sidebar .card {
+                display:flex;
+                gap:6px;
+                overflow-x:auto;
+                padding:8px;
+                border-color:#e8e9eb;
+                border-radius:15px;
+                background:#fff;
+                box-shadow:0 4px 12px rgba(19,31,52,.04);
+                scrollbar-width:none;
+                -webkit-overflow-scrolling:touch;
+            }
+            body.admin-app main .admin-sidebar .card::-webkit-scrollbar { display:none; }
+            body.admin-app main .admin-sidebar .card > a {
+                display:inline-flex !important;
+                flex:0 0 auto;
+                align-items:center;
+                min-height:40px;
+                margin:0 !important;
+                padding:8px 11px !important;
+                border-radius:11px;
+                color:#33415c;
+                background:#f6f6f4;
+                font-size:.72rem;
+                font-weight:650;
+                white-space:nowrap;
+            }
+            body.admin-app main .admin-content { width:100%; min-width:0 !important; }
+            body.admin-app main .admin-page-heading { align-items:flex-start; flex-direction:column; gap:10px; margin-bottom:14px; }
+            body.admin-app main .admin-page-heading h1 { color:#17233f; font-size:1.5rem; }
+            body.admin-app main .admin-page-heading p { color:#687184; font-size:.78rem; }
+            body.admin-app main .admin-quick-actions { width:100%; gap:7px; }
+            body.admin-app main .admin-quick-actions .btn { flex:1 1 130px; width:auto; min-height:42px; }
+            body.admin-app main .admin-content .card {
+                min-width:0;
+                border-color:#eceef1;
+                border-radius:15px;
+                box-shadow:0 4px 12px rgba(19,31,52,.04);
+                overflow-wrap:anywhere;
+            }
+            body.admin-app main .admin-content .grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+            body.admin-app main .admin-content .grid > .card { padding:12px; }
+            body.admin-app main .admin-content form.card { max-width:100% !important; padding:15px; }
+            body.admin-app main .admin-content input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+            body.admin-app main .admin-content select,
+            body.admin-app main .admin-content textarea { width:100%; min-width:0; min-height:44px; font-size:16px; }
+            body.admin-app main .admin-content img { max-width:100%; height:auto; }
+            body.admin-app main .admin-content [style*="display:flex"] { gap:8px; }
+            body.admin-app main .admin-content .btn { min-height:42px; border-radius:11px; }
+        }
+        @media (max-width: 480px) {
+            body.storefront-app main > div[style*="overflow-x:auto"] th,
+            body.storefront-app main > div[style*="overflow-x:auto"] td { padding:10px !important; }
+            body.storefront-app .about-hero { min-height:278px; }
+            body.storefront-app .about-hero > div:first-child { width:84%; }
+            body.storefront-app .contact-hero { padding-right:13px; padding-left:13px; }
+            body.admin-app main .admin-identity { align-items:flex-start; flex-direction:column; }
+            body.admin-app main .admin-identity-actions { width:100%; }
+            body.admin-app main .admin-content .grid { gap:8px; }
+            body.admin-app main .admin-content .grid > .card { padding:10px; }
+        }
         #pwa-install-help li { margin:10px 0; }
         #pwa-install-help button { background:var(--vert); color:#fff; border:0; border-radius:8px; padding:10px 16px; font-weight:700; cursor:pointer; }
     </style>
@@ -809,8 +1077,35 @@
         </nav>
     </header>
 
-    @unless(request()->routeIs('admin.*'))
-        <nav class="mobile-app-nav" aria-label="Navigation principale">
+    <nav class="mobile-app-nav" aria-label="{{ request()->routeIs('admin.*') ? 'Navigation administration' : 'Navigation principale' }}">
+        @if(request()->routeIs('admin.*'))
+            <a href="{{ route('admin.dashboard') }}" @if(request()->routeIs('admin.dashboard')) aria-current="page" @endif>
+                <x-icon name="home" size="21"/>
+                <span>Accueil</span>
+            </a>
+            @if(Auth::user()->hasAdminRole('products'))
+                <a href="{{ route('admin.products.index') }}" @if(request()->routeIs('admin.products.*', 'admin.categories.*')) aria-current="page" @endif>
+                    <x-icon name="bag" size="21"/>
+                    <span>Produits</span>
+                </a>
+            @endif
+            @if(Auth::user()->hasAdminRole('orders'))
+                <a href="{{ route('admin.orders.index') }}" @if(request()->routeIs('admin.orders.*')) aria-current="page" @endif>
+                    <x-icon name="box" size="21"/>
+                    <span>Commandes</span>
+                </a>
+            @endif
+            @if(Auth::user()->hasAdminRole('super_admin'))
+                <a href="{{ route('admin.users.index') }}" @if(request()->routeIs('admin.users.*')) aria-current="page" @endif>
+                    <x-icon name="user" size="21"/>
+                    <span>Clients</span>
+                </a>
+            @endif
+            <a href="{{ route('home') }}">
+                <x-icon name="grid" size="21"/>
+                <span>Boutique</span>
+            </a>
+        @else
             <a href="{{ route('home') }}" @if(request()->routeIs('home')) aria-current="page" @endif>
                 <x-icon name="home" size="21"/>
                 <span>Accueil</span>
@@ -846,8 +1141,8 @@
                 <span>Panier</span>
                 @if(count(session('cart', [])) > 0)<span class="cart-badge">{{ count(session('cart', [])) }}</span>@endif
             </a>
-        </nav>
-    @endunless
+        @endif
+    </nav>
 
     <main>
         @if (session('success'))
@@ -867,6 +1162,20 @@
     </main>
 
     <footer id="contact" class="site-footer">
+        <div class="mobile-app-help">
+            <details>
+                <summary>Aide et informations</summary>
+                <div class="mobile-app-help-links">
+                    <a href="{{ route('contact.index') }}">Contacter le service client</a>
+                    <a href="{{ route('delivery') }}">Livraison et retrait</a>
+                    <a href="{{ route('returns') }}">Retours et remboursements</a>
+                    <a href="{{ route('terms') }}">Conditions de vente</a>
+                    <a href="{{ route('privacy') }}">Confidentialité</a>
+                    <a href="{{ route('about.index') }}">À propos de HerveShop</a>
+                </div>
+            </details>
+            <small>&copy; {{ date('Y') }} HerveShop</small>
+        </div>
         <div class="footer-grid">
             <div class="footer-brand"><img src="{{ asset('images/logo.png') }}" alt="HerveShop"><p>Vos envies, notre priorité. Des produits choisis avec soin au meilleur prix.</p></div>
             <div><h3>Liens utiles</h3><a href="{{ route('home') }}">Accueil</a><a href="{{ route('products.index') }}">Boutique</a><a href="{{ route('categories.index') }}">Catégories</a><a href="{{ route('compare.index') }}">Comparer</a></div>
