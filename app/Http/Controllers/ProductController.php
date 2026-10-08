@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -71,12 +72,25 @@ class ProductController extends Controller
         return view('products.index', compact('products', 'categories', 'featuredProducts'));
     }
 
-    public function show(string $slug)
+    public function show(Request $request, string $slug)
     {
         $product = Product::with(['category', 'images', 'reviews.user'])
             ->where('slug', $slug)
             ->where('is_active', true)
             ->firstOrFail();
+
+        if ($request->query->has('ref')) {
+            $partner = User::where('affiliate_code', $request->query('ref'))
+                ->where('account_type', 'partner')
+                ->where('is_active', true)
+                ->first();
+
+            if ($partner && $partner->id !== Auth::id()) {
+                $request->session()->put('affiliate_partner_id', $partner->id);
+            } else {
+                $request->session()->forget('affiliate_partner_id');
+            }
+        }
 
         $similaires = Product::where('category_id', $product->category_id)
             ->with(['images', 'category'])

@@ -1068,7 +1068,7 @@
         </nav>
         <nav class="action-nav" aria-label="Actions du compte">
             @auth
-                <a href="{{ Auth::user()->is_admin ? route('admin.dashboard') : route('account.dashboard') }}" aria-label="Mon compte" title="Mon compte"><svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0H5Z"/></svg></a>
+                <a href="{{ Auth::user()->is_admin ? route('admin.dashboard') : route(match (Auth::user()->account_type) { 'partner' => 'affiliate.dashboard', 'courier' => 'courier.dashboard', default => 'account.dashboard' }) }}" aria-label="Mon compte" title="Mon compte"><svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0H5Z"/></svg></a>
                 @if(!Auth::user()->is_admin)<a href="{{ route('wishlist.index') }}" aria-label="Mes favoris" title="Mes favoris"><svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="m12 20-1.4-1.3C5.6 14.2 2 10.9 2 7a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 3.9-3.6 7.2-8.6 11.7L12 20Z"/></svg></a>@endif
             @else
                 <a href="{{ route('login') }}" aria-label="Connexion" title="Connexion"><svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0H5Z"/></svg></a>
@@ -1100,6 +1100,10 @@
                     <x-icon name="user" size="21"/>
                     <span>Clients</span>
                 </a>
+                <a href="{{ route('admin.affiliate-withdrawals.index') }}" @if(request()->routeIs('admin.affiliate-withdrawals.*')) aria-current="page" @endif>
+                    <x-icon name="wallet" size="21"/>
+                    <span>Retraits</span>
+                </a>
             @endif
             <a href="{{ route('home') }}">
                 <x-icon name="grid" size="21"/>
@@ -1120,7 +1124,7 @@
             </a>
             @auth
                 @if(!Auth::user()->is_admin)
-                    <a href="{{ route('account.dashboard') }}" @if(request()->routeIs('account.*', 'orders.*', 'wishlist.*')) aria-current="page" @endif>
+                    <a href="{{ route(match (Auth::user()->account_type) { 'partner' => 'affiliate.dashboard', 'courier' => 'courier.dashboard', default => 'account.dashboard' }) }}" @if(request()->routeIs('account.*', 'affiliate.*', 'courier.*', 'orders.*', 'wishlist.*')) aria-current="page" @endif>
                         <x-icon name="user" size="21"/>
                         <span>Compte</span>
                     </a>

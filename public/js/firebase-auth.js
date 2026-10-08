@@ -87,7 +87,7 @@ async function linkPendingGoogleCredential(user) {
     }
 }
 
-async function createLaravelSession(user, whatsapp = null, remember = false) {
+async function createLaravelSession(user, whatsapp = null, remember = false, accountType = 'customer') {
     const response = await fetch('/auth/firebase/session', {
         method: 'POST',
         credentials: 'same-origin',
@@ -100,6 +100,7 @@ async function createLaravelSession(user, whatsapp = null, remember = false) {
             id_token: await user.getIdToken(true),
             whatsapp,
             remember,
+            account_type: accountType,
         }),
     });
     const result = await response.json();
@@ -140,7 +141,12 @@ document.querySelectorAll('[data-firebase-auth]').forEach((form) => {
                 await updateProfile(credential.user, {
                     displayName: String(data.get('name') || '').trim(),
                 });
-                await createLaravelSession(credential.user, String(data.get('whatsapp') || '').trim() || null);
+                await createLaravelSession(
+                    credential.user,
+                    String(data.get('whatsapp') || '').trim() || null,
+                    false,
+                    String(data.get('account_type') || 'customer'),
+                );
             } else {
                 const remember = form.querySelector('[name="remember"]')?.checked ?? false;
                 await setPersistence(firebaseAuth, remember ? browserLocalPersistence : browserSessionPersistence);
@@ -165,12 +171,26 @@ document.querySelectorAll('[data-firebase-google]').forEach((button) => {
         const remember = form?.querySelector('[name="remember"]')?.checked ?? false;
 
         try {
+            const data = form ? new FormData(form) : null;
+            if (form?.dataset.firebaseAuth === 'register') {
+                const accountType = String(data?.get('account_type') || 'customer');
+                const whatsapp = String(data?.get('whatsapp') || '').trim() || null;
+                if (accountType !== 'customer' && !whatsapp) {
+                    form.querySelector('[name="whatsapp"]')?.reportValidity();
+                    return;
+                }
+            }
             await setPersistence(
                 firebaseAuth,
                 remember ? browserLocalPersistence : browserSessionPersistence,
             );
             const result = await signInWithPopup(firebaseAuth, new GoogleAuthProvider());
-            await createLaravelSession(result.user, null, remember);
+            await createLaravelSession(
+                result.user,
+                form?.dataset.firebaseAuth === 'register' ? String(data?.get('whatsapp') || '').trim() || null : null,
+                remember,
+                form?.dataset.firebaseAuth === 'register' ? String(data?.get('account_type') || 'customer') : 'customer',
+            );
         } catch (error) {
             if (error.code === 'auth/account-exists-with-different-credential') {
                 const credential = GoogleAuthProvider.credentialFromError(error);

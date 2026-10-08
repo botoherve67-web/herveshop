@@ -3,6 +3,7 @@
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\AffiliateWithdrawalController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
@@ -16,9 +17,11 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryPageController;
+use App\Http\Controllers\CourierController;
 use App\Http\Controllers\CompareController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\AffiliateController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
@@ -71,6 +74,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/mon-compte', [AccountController::class, 'dashboard'])->name('account.dashboard');
     Route::patch('/mon-compte', [AccountController::class, 'update'])->name('account.update');
+    Route::get('/partenaire', [AffiliateController::class, 'dashboard'])->name('affiliate.dashboard');
+    Route::post('/partenaire/retrait', [AffiliateController::class, 'requestWithdrawal'])->name('affiliate.withdrawals.store');
+    Route::get('/livreur', [CourierController::class, 'dashboard'])->name('courier.dashboard');
+    Route::post('/livreur/{order}/reclamer', [CourierController::class, 'claim'])->name('courier.orders.claim');
+    Route::patch('/livreur/{order}/livree', [CourierController::class, 'complete'])->name('courier.orders.complete');
 
     Route::post('/produits/{product}/avis', [ReviewController::class, 'store'])->name('reviews.store');
     Route::post('/produits/{product}/avis/{review}/signaler', [ReviewController::class, 'report'])->name('reviews.report');
@@ -111,6 +119,8 @@ Route::middleware(['auth', 'admin', 'admin.activity'])->prefix('admin')->name('a
     });
 
     Route::middleware('admin:super_admin')->group(function () {
+        Route::get('/retraits-partenaires', [AffiliateWithdrawalController::class, 'index'])->name('affiliate-withdrawals.index');
+        Route::patch('/retraits-partenaires/{withdrawal}', [AffiliateWithdrawalController::class, 'review'])->name('affiliate-withdrawals.review');
         Route::get('/statistiques', [AnalyticsController::class, 'index'])->name('analytics.index');
         Route::get('/clients', [AdminUserController::class, 'index'])->name('users.index');
         Route::get('/clients/export', [AdminUserController::class, 'export'])->name('users.export');

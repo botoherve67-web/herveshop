@@ -134,6 +134,11 @@ class OrderController extends Controller
             $total = $sousTotal - $reduction + $fraisLivraison;
             $montantAcompte = $estPrecommande ? $acompteTotal : $total;
             $montantSolde = $estPrecommande ? ($soldeTotal + $fraisLivraison - $reduction) : 0;
+            $affiliatePartner = User::whereKey(session('affiliate_partner_id'))
+                ->where('account_type', 'partner')
+                ->where('is_active', true)
+                ->where('id', '!=', Auth::id())
+                ->first();
 
             $order = Order::create([
                 'reference' => 'HS-'.strtoupper(Str::random(8)),
@@ -154,6 +159,7 @@ class OrderController extends Controller
                 'moyen_paiement' => $request->moyen_paiement,
                 'statut_paiement' => 'en_attente',
                 'statut' => 'en_attente',
+                'affiliate_partner_id' => $affiliatePartner?->id,
             ]);
 
             foreach ($items as $item) {

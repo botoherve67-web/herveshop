@@ -29,6 +29,7 @@ class Order extends Model
         'montant_acompte', 'montant_solde', 'solde_echeance_at',
         'moyen_paiement', 'transaction_id', 'preuve_paiement_path',
         'preuve_paiement_envoyee_at', 'statut_paiement', 'statut', 'remarque_admin',
+        'affiliate_partner_id', 'courier_id',
     ];
 
     protected $casts = [
@@ -49,6 +50,21 @@ class Order extends Model
     public function statusHistory()
     {
         return $this->hasMany(OrderStatusHistory::class)->with('user')->latest();
+    }
+
+    public function affiliatePartner()
+    {
+        return $this->belongsTo(User::class, 'affiliate_partner_id');
+    }
+
+    public function courier()
+    {
+        return $this->belongsTo(User::class, 'courier_id');
+    }
+
+    public function affiliateCommission()
+    {
+        return $this->hasOne(AffiliateCommission::class);
     }
 
     public function statusLabel(): string

@@ -25,7 +25,14 @@ class AuthController extends Controller
         $data = $request->validate([
             'id_token' => ['required', 'string', 'max:10000'],
             'whatsapp' => ['nullable', 'string', 'max:30'],
+            'account_type' => ['sometimes', 'in:customer,courier,partner'],
         ]);
+        $accountType = $data['account_type'] ?? 'customer';
+        if (in_array($accountType, ['courier', 'partner'], true) && empty($data['whatsapp'])) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'whatsapp' => 'Un numéro WhatsApp est obligatoire pour un compte livreur ou partenaire.',
+            ]);
+        }
 
         try {
             $claims = $verifier->verify($data['id_token']);
@@ -81,6 +88,8 @@ class AuthController extends Controller
                     'firebase_uid' => $firebaseUid,
                     'email_verified_at' => $emailVerified ? now() : null,
                     'is_active' => true,
+                    'account_type' => $accountType,
+                    'affiliate_code' => $accountType === 'partner' ? $this->newAffiliateCode() : null,
                 ]);
                 $isNewUser = true;
             } else {
@@ -116,7 +125,11 @@ class AuthController extends Controller
         }
 
         return response()->json([
-            'redirect' => route($user->is_admin ? 'admin.dashboard' : 'account.dashboard'),
+            'redirect' => route($user->is_admin ? 'admin.dashboard' : match ($user->account_type) {
+                'partner' => 'affiliate.dashboard',
+                'courier' => 'courier.dashboard',
+                default => 'account.dashboard',
+            }),
         ]);
     }
 
@@ -132,5 +145,14 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('home');
+    }
+
+    private function newAffiliateCode(): string
+    {
+        do {
+            $code = Str::upper(Str::random(10));
+        } while (User::where('affiliate_code', $code)->exists());
+
+        return $code;
     }
 }

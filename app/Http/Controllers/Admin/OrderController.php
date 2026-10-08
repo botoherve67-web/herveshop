@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderStatusHistory;
 use App\Notifications\OrderUpdateNotification;
+use App\Services\AffiliateCommissionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -58,7 +60,7 @@ class OrderController extends Controller
         return view('admin.orders.show', compact('order'));
     }
 
-    public function updateStatut(Request $request, Order $order)
+    public function updateStatut(Request $request, Order $order, AffiliateCommissionService $commissionService)
     {
         $request->validate([
             'statut' => 'required|in:en_attente,confirmee,en_preparation,expediee,livree,annulee',
@@ -66,23 +68,35 @@ class OrderController extends Controller
             'tracking_code' => 'nullable|string|max:100|unique:orders,tracking_code,'.$order->id,
         ]);
 
-        $oldStatus = $order->statut;
-        $data = [
-            'statut' => $request->statut,
-            'tracking_code' => $request->filled('tracking_code')
-                ? $request->tracking_code
-                : ($request->statut === 'expediee' && ! $order->tracking_code ? $this->generateTrackingCode() : $order->tracking_code),
-        ];
-        if ($request->filled('remarque_admin')) {
-            $data['remarque_admin'] = $request->remarque_admin;
-        }
-        $order->update($data);
-        if ($order->wasChanged('statut') || array_key_exists('remarque_admin', $data)) {
-            $this->recordHistory($order, 'commande', $oldStatus, $order->statut, $request->remarque_admin);
-            $event = $order->statut === 'annulee' ? 'annulation' : ($order->statut === 'expediee' ? 'expedition' : 'statut');
-            $order->load('user');
+        $result = DB::transaction(function () use ($order, $request, $commissionService): array {
+            $lockedOrder = Order::whereKey($order->id)->lockForUpdate()->firstOrFail();
+            $oldStatus = $lockedOrder->statut;
+            $data = [
+                'statut' => $request->statut,
+                'tracking_code' => $request->filled('tracking_code')
+                    ? $request->tracking_code
+                    : ($request->statut === 'expediee' && ! $lockedOrder->tracking_code ? $this->generateTrackingCode() : $lockedOrder->tracking_code),
+            ];
+            if ($request->filled('remarque_admin')) {
+                $data['remarque_admin'] = $request->remarque_admin;
+            }
+            $lockedOrder->update($data);
+            $changed = $lockedOrder->wasChanged('statut') || array_key_exists('remarque_admin', $data);
+            if ($changed) {
+                $this->recordHistory($lockedOrder, 'commande', $oldStatus, $lockedOrder->statut, $request->remarque_admin);
+            }
+            $commissionService->syncForOrder($lockedOrder);
+
+            return [
+                'changed' => $changed,
+                'event' => $lockedOrder->statut === 'annulee' ? 'annulation' : ($lockedOrder->statut === 'expediee' ? 'expedition' : 'statut'),
+            ];
+        });
+
+        if ($result['changed']) {
+            $order->refresh()->load('user');
             try {
-                $order->user->notify(new OrderUpdateNotification($order, $event, $request->remarque_admin));
+                $order->user->notify(new OrderUpdateNotification($order, $result['event'], $request->remarque_admin));
             } catch (\Throwable $exception) {
                 Log::error('Notification statut non envoyee.', ['order_id' => $order->id, 'error' => $exception->getMessage()]);
             }
@@ -91,7 +105,7 @@ class OrderController extends Controller
         return back()->with('success', 'Statut mis à jour.');
     }
 
-    public function confirmerPaiement(Request $request, Order $order)
+    public function confirmerPaiement(Request $request, Order $order, AffiliateCommissionService $commissionService)
     {
         $request->validate([
             'statut_paiement' => 'required|in:acompte_paye,paye,echec',
@@ -103,15 +117,25 @@ class OrderController extends Controller
                 'statut_paiement' => 'Une transaction et une preuve de paiement sont obligatoires pour valider ce paiement.',
             ]);
         }
-        $oldPaymentStatus = $order->statut_paiement;
-        $data = ['statut_paiement' => $request->statut_paiement];
-        if ($request->filled('remarque_admin')) {
-            $data['remarque_admin'] = $request->remarque_admin;
-        }
-        $order->update($data);
-        if ($order->wasChanged('statut_paiement') || array_key_exists('remarque_admin', $data)) {
-            $this->recordHistory($order, 'paiement', $oldPaymentStatus, $order->statut_paiement, $request->remarque_admin);
-            $order->load('user');
+        $result = DB::transaction(function () use ($order, $request, $commissionService): bool {
+            $lockedOrder = Order::whereKey($order->id)->lockForUpdate()->firstOrFail();
+            $oldPaymentStatus = $lockedOrder->statut_paiement;
+            $data = ['statut_paiement' => $request->statut_paiement];
+            if ($request->filled('remarque_admin')) {
+                $data['remarque_admin'] = $request->remarque_admin;
+            }
+            $lockedOrder->update($data);
+            $changed = $lockedOrder->wasChanged('statut_paiement') || array_key_exists('remarque_admin', $data);
+            if ($changed) {
+                $this->recordHistory($lockedOrder, 'paiement', $oldPaymentStatus, $lockedOrder->statut_paiement, $request->remarque_admin);
+            }
+            $commissionService->syncForOrder($lockedOrder);
+
+            return $changed;
+        });
+
+        if ($result) {
+            $order->refresh()->load('user');
             try {
                 $order->user->notify(new OrderUpdateNotification($order, 'paiement', $request->remarque_admin));
             } catch (\Throwable $exception) {
