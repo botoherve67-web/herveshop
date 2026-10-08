@@ -99,6 +99,8 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'seo_title' => 'nullable|string|max:70',
+            'seo_description' => 'nullable|string|max:320',
             'price' => 'required|integer|min:0',
             'type' => 'required|in:stock,precommande',
             'stock' => 'nullable|integer|min:1|required_if:type,stock',

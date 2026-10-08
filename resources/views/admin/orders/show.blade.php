@@ -9,7 +9,8 @@
         <p>Client : <strong>{{ $order->user->name }}</strong> — {{ $order->user->email }} — {{ $order->user->whatsapp }}</p>
         <p>Total : {{ number_format($order->total, 0, ',', ' ') }} FCFA</p>
         <p>Moyen de paiement : <strong>{{ strtoupper($order->moyen_paiement) }}</strong></p>
-        <p>Statut du paiement : <strong>{{ ucfirst(str_replace('_', ' ', $order->statut_paiement)) }}</strong></p>
+        <p>Statut de la commande : <strong>{{ $order->statusLabel() }}</strong></p>
+        <p>Statut du paiement : <strong>{{ $order->paymentStatusLabel() }}</strong></p>
         <p style="display:flex; gap:8px; flex-wrap:wrap;">
             <a href="{{ route('admin.orders.invoice', $order) }}" class="btn outline">Télécharger la facture PDF</a>
             @if(in_array($order->statut_paiement, ['acompte_paye', 'paye'], true))
@@ -48,7 +49,8 @@
         <h3>Historique</h3>
         @forelse($order->statusHistory as $history)
             <div style="border-left:3px solid var(--vert); padding-left:10px; margin-bottom:10px;">
-                <strong>{{ ucfirst($history->type) }}</strong> : {{ $history->ancienne_valeur ? ucfirst(str_replace('_', ' ', $history->ancienne_valeur)).' → ' : '' }}{{ ucfirst(str_replace('_', ' ', $history->nouvelle_valeur)) }}<br>
+                <strong>{{ \App\Models\Order::historyTypeLabel($history->type) }}</strong> :
+                {{ $history->ancienne_valeur ? ($history->type === 'paiement' ? \App\Models\Order::paymentStatusLabelFor($history->ancienne_valeur) : \App\Models\Order::statusLabelFor($history->ancienne_valeur)).' → ' : '' }}{{ $history->type === 'paiement' ? \App\Models\Order::paymentStatusLabelFor($history->nouvelle_valeur) : \App\Models\Order::statusLabelFor($history->nouvelle_valeur) }}<br>
                 <small>{{ $history->created_at->format('d/m/Y H:i') }} — {{ $history->user?->name ?? 'Système' }}</small>
                 @if($history->remarque)<p style="margin:4px 0 0;">{{ $history->remarque }}</p>@endif
             </div>
@@ -61,9 +63,10 @@
                 @csrf
                 @method('PATCH')
                 <label>Statut commande</label>
+                <p>Le client recevra un e-mail lorsque le statut change.</p>
                 <select name="statut">
                     @foreach(['en_attente','confirmee','en_preparation','expediee','livree','annulee'] as $s)
-                        <option value="{{ $s }}" @selected($order->statut === $s)>{{ ucfirst(str_replace('_',' ',$s)) }}</option>
+                        <option value="{{ $s }}" @selected($order->statut === $s)>{{ \App\Models\Order::statusLabelFor($s) }}</option>
                     @endforeach
                 </select>
                 <label>Remarque (obligatoire en cas d'annulation)</label>
@@ -79,7 +82,7 @@
                 <label>Statut paiement</label>
                 <select name="statut_paiement">
                     @foreach(['en_attente','acompte_paye','paye','echec'] as $s)
-                        <option value="{{ $s }}" @selected($order->statut_paiement === $s)>{{ ucfirst(str_replace('_',' ',$s)) }}</option>
+                        <option value="{{ $s }}" @selected($order->statut_paiement === $s)>{{ \App\Models\Order::paymentStatusLabelFor($s) }}</option>
                     @endforeach
                 </select>
                 <label>Remarque (obligatoire en cas d'échec)</label>

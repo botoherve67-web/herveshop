@@ -8,4 +8,4 @@ Disallow: /connexion
 Disallow: /inscription
 Disallow: /verification-email
 
-Sitemap: /sitemap.xml
+Sitemap: https://herveshop.onrender.com/sitemap.xml

@@ -1,9 +1,43 @@
 @extends('layouts.app')
 
-@section('title', $product->name . ' — HerveShop')
-@section('meta_description', \Illuminate\Support\Str::limit(strip_tags($product->description ?: $product->name.' disponible sur HerveShop.'), 155))
+@section('title', $product->seoTitle())
+@section('meta_description', $product->seoDescription())
 @section('canonical', route('products.show', $product->slug))
 @section('og_type', 'product')
+@section('og_image', $product->images->first() ? $product->images->first()->url() : asset('images/logo.png'))
+
+@push('structured_data')
+    @php
+        $productSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Product',
+            'name' => $product->name,
+            'description' => $product->seoDescription(),
+            'image' => $product->images->map(fn ($image) => $image->url())->values()->all(),
+            'category' => $product->category?->name,
+            'offers' => [
+                '@type' => 'Offer',
+                'url' => route('products.show', $product->slug),
+                'priceCurrency' => 'XOF',
+                'price' => number_format($product->price, 0, '.', ''),
+                'availability' => $product->estEnPrecommande()
+                    ? 'https://schema.org/PreOrder'
+                    : ($product->stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'),
+            ],
+        ];
+        if ($productSchema['image'] === []) {
+            unset($productSchema['image']);
+        }
+        if ($product->reviews->isNotEmpty()) {
+            $productSchema['aggregateRating'] = [
+                '@type' => 'AggregateRating',
+                'ratingValue' => $product->noteMoyenne(),
+                'reviewCount' => $product->reviews->count(),
+            ];
+        }
+    @endphp
+    <script type="application/ld+json">@json($productSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)</script>
+@endpush
 
 @section('content')
     @php
@@ -25,14 +59,14 @@
             <div class="detail-gallery">
                 <div class="detail-thumbs">
                     @forelse($images as $image)
-                        <button class="detail-thumb {{ $loop->first ? 'active' : '' }}" type="button" data-image="{{ asset('storage/'.$image->path) }}"><img src="{{ asset('storage/'.$image->path) }}" alt="{{ $product->name }} - image {{ $loop->iteration }}"></button>
+                        <button class="detail-thumb {{ $loop->first ? 'active' : '' }}" type="button" data-image="{{ $image->url() }}"><img src="{{ $image->url() }}" alt="{{ $product->imageAltText() }} — photo {{ $loop->iteration }}" @if($loop->index > 2) loading="lazy" @endif></button>
                     @empty
                         <span class="detail-thumb"><x-icon name="box" size="22"/></span>
                     @endforelse
                 </div>
                 <div class="detail-main-image">
                     <span class="detail-image-badge">{{ $isPreorder ? 'Précommande' : 'En stock' }}</span>
-                    @if($mainImage)<img id="detail-main-image" src="{{ asset('storage/'.$mainImage->path) }}" alt="{{ $product->name }}">@else<span class="detail-placeholder"><x-icon name="box" size="52"/></span>@endif
+                    @if($mainImage)<img id="detail-main-image" src="{{ $mainImage->url() }}" alt="{{ $product->imageAltText() }}" fetchpriority="high">@else<span class="detail-placeholder"><x-icon name="box" size="52"/></span>@endif
                     @if($images->count() > 1)<button class="detail-arrow prev" type="button" aria-label="Image précédente">‹</button><button class="detail-arrow next" type="button" aria-label="Image suivante">›</button>@endif
                 </div>
             </div>
@@ -64,7 +98,7 @@
             <div class="detail-tabs"><nav class="detail-tab-nav"><a class="active" href="#description">Description</a><a href="#reviews">Avis clients ({{ $product->reviews->count() }})</a><a href="#delivery">Livraison & retour</a></nav><div class="detail-description-block" id="description"><h2>Description du produit</h2><p>{{ $product->description ?: 'Aucune description complémentaire n’est disponible pour le moment.' }}</p></div><div class="detail-description-block" id="delivery"><h2>Livraison et retour</h2><p>Les frais et délais sont confirmés au moment de la commande selon votre zone de livraison.</p></div>
                 <div class="detail-reviews" id="reviews"><h2 style="color:#173f5f;font-size:.9rem">Avis clients</h2>@auth<form action="{{ route('reviews.store', $product) }}" method="POST" class="card detail-review-form">@csrf<label>Note (1 à 5)</label><input type="number" name="note" min="1" max="5" required><label>Commentaire</label><textarea name="commentaire" rows="3"></textarea><button type="submit" class="btn">Publier mon avis</button></form>@else<p style="font-size:.7rem"><a href="{{ route('login') }}">Connectez-vous</a> pour laisser un avis.</p>@endauth @forelse($product->reviews as $review)<div class="detail-review"><strong>{{ $review->user->name }} · <span class="detail-stars">{{ str_repeat('★', $review->note) }}</span></strong><p>{{ $review->commentaire ?: 'Avis sans commentaire.' }}</p></div>@empty<p style="font-size:.7rem;color:#7188a7">Aucun avis pour l'instant.</p>@endforelse</div>
             </div>
-            <aside class="detail-similar"><div class="detail-similar-heading"><h2>Produits similaires</h2><a href="{{ route('products.index', ['categorie' => $product->category?->slug]) }}">Voir tout →</a></div><div class="detail-similar-grid">@foreach($similaires as $similar)<a class="detail-similar-item" href="{{ route('products.show', $similar->slug) }}">@if($similar->images->first())<img src="{{ asset('storage/'.$similar->images->first()->path) }}" alt="{{ $similar->name }}">@else<div style="height:85px;display:grid;place-items:center;background:#f4f8fc"><x-icon name="box" size="22"/></div>@endif<strong>{{ $similar->name }}</strong><small>{{ number_format($similar->price,0,',',' ') }} FCFA</small></a>@endforeach</div></aside>
+            <aside class="detail-similar"><div class="detail-similar-heading"><h2>Produits similaires</h2><a href="{{ route('products.index', ['categorie' => $product->category?->slug]) }}">Voir tout →</a></div><div class="detail-similar-grid">@foreach($similaires as $similar)<a class="detail-similar-item" href="{{ route('products.show', $similar->slug) }}">@if($similar->images->first())<img src="{{ $similar->images->first()->url() }}" alt="{{ $similar->imageAltText() }}" loading="lazy">@else<div style="height:85px;display:grid;place-items:center;background:#f4f8fc"><x-icon name="box" size="22"/></div>@endif<strong>{{ $similar->name }}</strong><small>{{ number_format($similar->price,0,',',' ') }} FCFA</small></a>@endforeach</div></aside>
         </section>
     </div>
     <div class="detail-side-card" style="margin-top:18px;">

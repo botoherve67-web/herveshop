@@ -37,28 +37,28 @@ class OrderUpdateNotification extends Notification
     {
         return match ($this->event) {
             'commande' => [
-                'subject' => 'Commande enregistree - '.$this->order->reference,
-                'intro' => 'Votre commande a bien ete enregistree.',
+                'subject' => 'Commande enregistrée - '.$this->order->reference,
+                'intro' => 'Votre commande a bien été enregistrée. '.$this->order->statusDescription(),
             ],
             'paiement' => [
-                'subject' => 'Paiement mis a jour - '.$this->order->reference,
-                'intro' => 'Le statut de votre paiement est maintenant : '.$this->label($this->order->statut_paiement).'.',
+                'subject' => 'Paiement mis à jour - '.$this->order->reference,
+                'intro' => 'Le statut de votre paiement est maintenant : '.$this->order->paymentStatusLabel().'.',
             ],
             'preuve_paiement' => [
-                'subject' => 'Preuve de paiement recue - '.$this->order->reference,
+                'subject' => 'Preuve de paiement reçue - '.$this->order->reference,
                 'intro' => 'Nous avons bien reçu votre preuve de paiement. Notre équipe va la vérifier et vous informera du résultat.',
             ],
             'expedition' => [
-                'subject' => 'Commande expediee - '.$this->order->reference,
-                'intro' => 'Votre commande est maintenant en cours d expedition.',
+                'subject' => 'Commande expédiée - '.$this->order->reference,
+                'intro' => $this->order->statusDescription(),
             ],
             'annulation' => [
-                'subject' => 'Commande annulee - '.$this->order->reference,
-                'intro' => 'Votre commande a ete annulee.',
+                'subject' => 'Commande annulée - '.$this->order->reference,
+                'intro' => $this->order->statusDescription(),
             ],
             default => [
-                'subject' => 'Statut commande mis a jour - '.$this->order->reference,
-                'intro' => 'Le statut de votre commande est maintenant : '.$this->label($this->order->statut).'.',
+                'subject' => 'Commande mise à jour - '.$this->order->reference,
+                'intro' => 'Le statut de votre commande est maintenant « '.$this->order->statusLabel().' ». '.$this->order->statusDescription(),
             ],
         };
     }
@@ -66,9 +66,9 @@ class OrderUpdateNotification extends Notification
     private function data(object $notifiable, array $content): array
     {
         $details = [
-            'Reference' => $this->order->reference,
-            'Statut commande' => $this->label($this->order->statut),
-            'Statut paiement' => $this->label($this->order->statut_paiement),
+            'Référence' => $this->order->reference,
+            'Statut de la commande' => $this->order->statusLabel(),
+            'Statut du paiement' => $this->order->paymentStatusLabel(),
             'Montant' => number_format($this->order->total, 0, ',', ' ').' FCFA',
         ];
 
@@ -89,10 +89,5 @@ class OrderUpdateNotification extends Notification
             'actionText' => 'Voir ma commande',
             'closing' => 'Merci de votre confiance.',
         ];
-    }
-
-    private function label(?string $value): string
-    {
-        return ucfirst(str_replace('_', ' ', (string) $value));
     }
 }

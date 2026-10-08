@@ -13,13 +13,13 @@
         <div><label>Statut commande</label><select name="statut">
             <option value="">Tous</option>
             @foreach(['en_attente','confirmee','en_preparation','expediee','livree','annulee'] as $s)
-                <option value="{{ $s }}" @selected(request('statut') === $s)>{{ ucfirst(str_replace('_',' ',$s)) }}</option>
+                <option value="{{ $s }}" @selected(request('statut') === $s)>{{ \App\Models\Order::statusLabelFor($s) }}</option>
             @endforeach
         </select></div>
         <div><label>Statut paiement</label><select name="statut_paiement">
             <option value="">Tous</option>
             @foreach(['en_attente','acompte_paye','paye','echec'] as $s)
-                <option value="{{ $s }}" @selected(request('statut_paiement') === $s)>{{ ucfirst(str_replace('_',' ',$s)) }}</option>
+                <option value="{{ $s }}" @selected(request('statut_paiement') === $s)>{{ \App\Models\Order::paymentStatusLabelFor($s) }}</option>
             @endforeach
         </select></div>
         <div><label>Type</label><select name="type">
@@ -36,7 +36,7 @@
     @foreach($orders as $order)
         <a href="{{ route('admin.orders.show', $order) }}" class="card" style="display:block; margin-bottom:8px;">
             {{ $order->reference }} — {{ $order->user->name }} — {{ number_format($order->total, 0, ',', ' ') }} FCFA
-            — {{ ucfirst(str_replace('_',' ',$order->statut)) }}
+            — {{ $order->statusLabel() }} — {{ $order->paymentStatusLabel() }}
             @if($order->type === 'precommande')
                 <span class="badge-precommande">Précommande</span>
             @endif

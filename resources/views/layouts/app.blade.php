@@ -37,6 +37,32 @@
     <meta property="og:title" content="@yield('title', 'HerveShop')">
     <meta property="og:description" content="@yield('meta_description', 'HerveShop, votre boutique en ligne en Afrique de l’Ouest : produits disponibles, précommandes et livraison.')">
     <meta property="og:url" content="@yield('canonical', url()->current())">
+    <meta property="og:site_name" content="HerveShop">
+    <meta property="og:locale" content="fr_TG">
+    <meta property="og:image" content="@yield('og_image', asset('images/logo.png'))">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', 'HerveShop')">
+    <meta name="twitter:description" content="@yield('meta_description', 'HerveShop, votre boutique en ligne en Afrique de l’Ouest : produits disponibles, précommandes et livraison.')">
+    <meta name="twitter:image" content="@yield('og_image', asset('images/logo.png'))">
+    @stack('structured_data')
+    @php
+        $storeSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'OnlineStore',
+            'name' => 'HerveShop',
+            'url' => url('/'),
+            'logo' => asset('images/logo.png'),
+            'areaServed' => [
+                '@type' => 'Country',
+                'name' => 'Togo',
+            ],
+            'telephone' => \App\Models\AppSetting::read('contact_phone', '+228 96 29 20 39'),
+            'email' => \App\Models\AppSetting::read('contact_email') ?: config('mail.contact_address') ?: config('mail.from.address'),
+        ];
+    @endphp
+    <script type="application/ld+json">
+        @json($storeSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
+    </script>
     <style>
         :root {
             --vert: #0969ed;
@@ -311,6 +337,12 @@
         }
         #pwa-install { display:none; position:fixed; right:16px; bottom:16px; z-index:9999; background:var(--vert); color:#fff; border:0; border-radius:999px; padding:12px 18px; font-weight:700; font-size:.9rem; box-shadow:0 10px 24px rgba(9,105,237,.35); cursor:pointer; }
         #pwa-install.show { display:inline-flex; align-items:center; gap:8px; }
+        #pwa-install:focus-visible, #pwa-install-help button:focus-visible { outline:3px solid var(--vert-fonce); outline-offset:3px; }
+        #pwa-install-help { width:min(92vw,460px); border:0; border-radius:16px; padding:24px; color:var(--texte); box-shadow:0 18px 60px rgba(6,43,82,.25); }
+        #pwa-install-help::backdrop { background:rgba(6,43,82,.55); }
+        #pwa-install-help h2 { margin-top:0; }
+        #pwa-install-help li { margin:10px 0; }
+        #pwa-install-help button { background:var(--vert); color:#fff; border:0; border-radius:8px; padding:10px 16px; font-weight:700; cursor:pointer; }
     </style>
 </head>
 <body>
@@ -363,9 +395,10 @@
     <footer id="contact" class="site-footer">
         <div class="footer-grid">
             <div class="footer-brand"><img src="{{ asset('images/logo.png') }}" alt="HerveShop"><p>Vos envies, notre priorité. Des produits choisis avec soin au meilleur prix.</p></div>
-            <div><h3>Liens utiles</h3><a href="{{ route('home') }}">Accueil</a><a href="{{ route('products.index') }}">Boutique</a><a href="{{ route('products.index') }}">Catégories</a><a href="{{ route('compare.index') }}">Comparer</a></div>
-            <div><h3>Service client</h3><a href="{{ route('products.index') }}">FAQ</a><a href="{{ route('products.index') }}">Livraison</a><a href="{{ route('products.index') }}">Retours & Remboursement</a><a href="{{ route('cart.index') }}">Suivi de commande</a></div>
-            <div><h3>Contact</h3><p><x-icon name="headset" size="14"/> {{ \App\Models\AppSetting::read('contact_phone', '+228 96 29 20 39') }}</p><p><x-icon name="mail" size="14"/> botoherve67@gmail.com</p><p><x-icon name="pin" size="14"/> Lomé, Togo</p><a href="{{ route('contact.index') }}" class="footer-link">Nous écrire</a></div>
+            <div><h3>Liens utiles</h3><a href="{{ route('home') }}">Accueil</a><a href="{{ route('products.index') }}">Boutique</a><a href="{{ route('categories.index') }}">Catégories</a><a href="{{ route('compare.index') }}">Comparer</a></div>
+            <div><h3>Service client</h3><a href="{{ route('delivery') }}">Livraison</a><a href="{{ route('returns') }}">Retours & remboursement</a><a href="{{ route('cart.index') }}">Suivi de commande</a><a href="{{ route('contact.index') }}">Coordonnées et contact</a></div>
+            <div><h3>Informations</h3><a href="{{ route('terms') }}">Conditions de vente</a><a href="{{ route('privacy') }}">Confidentialité</a></div>
+            <div><h3>Contact</h3><p><x-icon name="headset" size="14"/> {{ \App\Models\AppSetting::read('contact_phone', '+228 96 29 20 39') }}</p><p><x-icon name="mail" size="14"/> {{ \App\Models\AppSetting::read('contact_email') ?: config('mail.contact_address') ?: config('mail.from.address', 'botoherve67@gmail.com') }}</p><p><x-icon name="pin" size="14"/> {{ \App\Models\AppSetting::read('contact_address', 'Lomé, Togo') }}</p><a href="{{ route('contact.index') }}" class="footer-link">Nous écrire</a></div>
         </div>
         <div class="footer-bottom"><span>&copy; {{ date('Y') }} HerveShop. Tous droits réservés.</span><span>Vos envies, notre priorité — HerveShop</span></div>
     </footer>
@@ -381,26 +414,49 @@
             }).catch(() => {});
         });
     </script>
-    <button id="pwa-install" type="button" aria-label="Installer l'application HerveShop">Installer l'app</button>
+    <button id="pwa-install" type="button" aria-label="Installer HerveShop" aria-haspopup="dialog" aria-controls="pwa-install-help">Installer l’application</button>
+    <dialog id="pwa-install-help" aria-labelledby="pwa-install-title">
+        <h2 id="pwa-install-title">Installer HerveShop</h2>
+        <p>Ajoutez la boutique à votre écran d’accueil pour la retrouver facilement.</p>
+        <ol>
+            <li><strong>Android / Chrome :</strong> ouvrez le menu ⋮ puis choisissez « Installer l’application » ou « Ajouter à l’écran d’accueil ».</li>
+            <li><strong>iPhone / iPad :</strong> dans Safari, touchez Partager puis « Sur l’écran d’accueil ».</li>
+            <li><strong>Ordinateur :</strong> utilisez l’icône d’installation dans la barre d’adresse ou le menu du navigateur.</li>
+        </ol>
+        <form method="dialog"><button type="submit">Compris</button></form>
+    </dialog>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
-                navigator.serviceWorker.register('/sw.js', {scope: '/'}).catch(function () {});
+                navigator.serviceWorker.register('/sw.js', {scope: '/'})
+                    .catch(function (error) { console.error('Installation du mode hors ligne impossible.', error); });
             });
         }
         (function () {
-            var deferred, btn = document.getElementById('pwa-install');
+            var deferred;
+            var btn = document.getElementById('pwa-install');
+            var help = document.getElementById('pwa-install-help');
+            var standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            if (!standalone) btn.classList.add('show');
             window.addEventListener('beforeinstallprompt', function (e) {
                 e.preventDefault();
                 deferred = e;
-                btn.classList.add('show');
             });
-            btn.addEventListener('click', function () {
-                if (!deferred) return;
-                deferred.prompt();
-                deferred.userChoice.finally(function () { deferred = null; btn.classList.remove('show'); });
+            btn.addEventListener('click', async function () {
+                if (!deferred) {
+                    help.showModal();
+                    return;
+                }
+                var promptEvent = deferred;
+                deferred = null;
+                await promptEvent.prompt();
+                var choice = await promptEvent.userChoice;
+                if (choice.outcome === 'accepted') btn.classList.remove('show');
             });
-            window.addEventListener('appinstalled', function () { btn.classList.remove('show'); });
+            window.addEventListener('appinstalled', function () {
+                btn.classList.remove('show');
+                deferred = null;
+            });
         })();
     </script>
     <script type="module" src="{{ asset('js/firebase.js') }}"></script>

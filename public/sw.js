@@ -1,4 +1,4 @@
-const VERSION = 'v2';
+const VERSION = 'v3';
 const STATIC_CACHE = `hervershop-static-${VERSION}`;
 const IMAGE_CACHE = `hervershop-img-${VERSION}`;
 const OFFLINE_URL = '/offline.html';
@@ -9,8 +9,9 @@ const PRECACHE = [
   '/images/icons/icon-512.png',
 ];
 const IMAGE_LIMIT = 80;
-// Pages dynamiques sensibles : jamais en cache.
-const NO_CACHE = [/^\/admin/, /^\/panier/, /^\/commande/, /^\/checkout/, /^\/connexion/, /^\/inscription/, /^\/mot-de-passe/, /^\/nouveau-mot-de-passe/, /^\/compte/, /^\/commandes/, /^\/analytics/];
+const NO_CACHE = [
+  /^\/(?:admin|panier|commande|commandes|checkout|connexion|inscription|mot-de-passe|nouveau-mot-de-passe|compte|mon-compte|mes-listes|comparer|analytics|auth|firebase|verification-email|deconnexion)(?:\/|$)/,
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(STATIC_CACHE).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
@@ -19,7 +20,12 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => ![STATIC_CACHE, IMAGE_CACHE].includes(k)).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(
+        keys.filter((key) =>
+          (key.startsWith('hervershop-static-') && key !== STATIC_CACHE)
+          || (key.startsWith('hervershop-img-') && key !== IMAGE_CACHE)
+        ).map((key) => caches.delete(key))
+      ))
       .then(() => self.clients.claim())
   );
 });
@@ -35,14 +41,17 @@ async function trimCache(name, max) {
 async function staleWhileRevalidate(request, cacheName, limit) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
-  const network = fetch(request)
-    .then((res) => {
-      if (res && (res.ok || res.type === 'opaque')) {
-        cache.put(request, res.clone()).then(() => limit && trimCache(cacheName, limit));
+  const network = fetch(request).then(async (res) => {
+    if (res && res.ok) {
+      try {
+        await cache.put(request, res.clone());
+        if (limit) await trimCache(cacheName, limit);
+      } catch (error) {
+        console.error('Impossible de mettre cette ressource en cache PWA.', error);
       }
-      return res;
-    })
-    .catch(() => cached);
+    }
+    return res;
+  }).catch(() => cached);
   return cached || network;
 }
 

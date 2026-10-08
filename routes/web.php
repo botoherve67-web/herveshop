@@ -33,6 +33,10 @@ Route::get('/categories', [CategoryPageController::class, 'index'])->name('categ
 Route::get('/a-propos', [AboutController::class, 'index'])->name('about.index');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
 Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:5,10')->name('contact.store');
+Route::view('/livraison', 'information.delivery')->name('delivery');
+Route::view('/retours-remboursements', 'information.returns')->name('returns');
+Route::view('/confidentialite', 'information.privacy')->name('privacy');
+Route::view('/conditions-vente', 'information.terms')->name('terms');
 Route::post('/analytics/click', [AnalyticsController::class, 'click'])->middleware('throttle:60,1')->name('analytics.click');
 Route::get('/produits/{slug}', [ProductController::class, 'show'])->name('products.show');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');

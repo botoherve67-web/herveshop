@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
     protected $fillable = [
         'category_id', 'name', 'slug', 'description', 'price', 'stock',
+        'seo_title', 'seo_description',
         'type', 'acompte_pourcent', 'date_cloture_precommande', 'date_expedition_prevue', 'date_arrivage_estimee',
         'bascule_auto_precommande', 'is_active', 'is_featured',
     ];
@@ -63,5 +65,29 @@ class Product extends Model
     public function montantSolde(): int
     {
         return $this->price - $this->montantAcompte();
+    }
+
+    public function seoTitle(): string
+    {
+        return Str::limit($this->seo_title ?: $this->name.' — HerveShop', 70, '');
+    }
+
+    public function seoDescription(): string
+    {
+        $description = $this->seo_description ?: strip_tags((string) $this->description);
+
+        if (trim($description) === '') {
+            $category = $this->category?->name;
+            $description = 'Découvrez '.$this->name
+                .($category ? ' dans la catégorie '.$category : '')
+                .' sur HerveShop à Lomé, Togo. Prix : '.number_format($this->price, 0, ',', ' ').' FCFA.';
+        }
+
+        return Str::limit(trim(preg_replace('/\s+/', ' ', $description)), 160, '');
+    }
+
+    public function imageAltText(): string
+    {
+        return trim($this->name.($this->category?->name ? ' — '.$this->category->name : ''));
     }
 }

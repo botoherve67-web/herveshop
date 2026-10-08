@@ -47,7 +47,7 @@
                     <tr>
                         <th style="padding:12px; text-align:left;">Image</th>
                         @foreach($products as $product)
-                            <td style="padding:12px; border-top:1px solid var(--bordure);"><a href="{{ route('products.show', $product->slug) }}">@if($product->images->first())<img src="{{ asset('storage/'.$product->images->first()->path) }}" alt="{{ $product->name }}" style="width:100%; height:130px; object-fit:cover; border-radius:6px;">@else<span>Pas d’image</span>@endif</a></td>
+                            <td style="padding:12px; border-top:1px solid var(--bordure);"><a href="{{ route('products.show', $product->slug) }}">@if($product->images->first())<img src="{{ $product->images->first()->url() }}" alt="{{ $product->imageAltText() }}" loading="lazy" style="width:100%; height:130px; object-fit:cover; border-radius:6px;">@else<span>Pas d’image</span>@endif</a></td>
                         @endforeach
                     </tr>
                     @foreach([

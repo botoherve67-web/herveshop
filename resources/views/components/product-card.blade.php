@@ -3,7 +3,7 @@
 <article class="card product-card">
     <a href="{{ route('products.show', $product->slug) }}">
         @if($product->images->first())
-            <img src="{{ asset('storage/'.$product->images->first()->path) }}" alt="{{ $product->name }}" class="product-card-image" style="width:100%; height:150px; object-fit:cover; border-radius:6px;">
+            <img src="{{ $product->images->first()->url() }}" alt="{{ $product->imageAltText() }}" loading="lazy" class="product-card-image" style="width:100%; height:150px; object-fit:cover; border-radius:6px;">
         @else
             <div style="width:100%; height:150px; background:#f0f0f0; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#999;">Pas d'image</div>
         @endif

@@ -10,7 +10,8 @@ class SitemapController extends Controller
     public function __invoke(): Response
     {
         $products = Product::where('is_active', true)
-            ->select(['slug', 'updated_at'])
+            ->select(['id', 'name', 'slug', 'updated_at'])
+            ->with('images')
             ->latest('updated_at')
             ->get();
 

@@ -9,10 +9,10 @@
     @php
         $statusSteps = [
             'en_attente' => 'En attente',
-            'confirmee' => 'Confirmee',
-            'en_preparation' => 'Preparation',
-            'expediee' => 'Expediee',
-            'livree' => 'Livree',
+            'confirmee' => 'Confirmée',
+            'en_preparation' => 'En préparation',
+            'expediee' => 'Expédiée',
+            'livree' => 'Livrée',
         ];
         $currentIndex = array_search($order->statut, array_keys($statusSteps), true);
         $currentIndex = $currentIndex === false ? 0 : $currentIndex;
@@ -28,21 +28,26 @@
             <p>Enregistree le {{ $order->created_at->format('d/m/Y H:i') }}</p>
         </div>
         <div class="order-badges">
-            <span class="order-badge">{{ ucfirst(str_replace('_', ' ', $order->statut)) }}</span>
-            <span class="order-badge pay">{{ ucfirst(str_replace('_', ' ', $order->statut_paiement)) }}</span>
+            <span class="order-badge">{{ $order->statusLabel() }}</span>
+            <span class="order-badge pay">{{ $order->paymentStatusLabel() }}</span>
         </div>
     </div>
 
     <div class="order-layout">
         <section style="display:grid;gap:16px;">
             <div class="order-panel">
-                <h2>Suivi commande</h2>
-                <div class="timeline">
-                    @foreach($statusSteps as $key => $label)
-                        @php $index = $loop->index; @endphp
-                        <span class="timeline-step {{ $index < $currentIndex ? 'is-done' : '' }} {{ $index === $currentIndex ? 'is-active' : '' }}">{{ $label }}</span>
-                    @endforeach
-                </div>
+                <h2>Suivi de votre commande</h2>
+                <p>{{ $order->statusDescription() }}</p>
+                @if($order->statut === 'annulee')
+                    <div class="admin-note" role="status"><strong>Commande annulée</strong></div>
+                @else
+                    <div class="timeline" aria-label="Étapes de la commande">
+                        @foreach($statusSteps as $key => $label)
+                            @php $index = $loop->index; @endphp
+                            <span class="timeline-step {{ $index < $currentIndex ? 'is-done' : '' }} {{ $index === $currentIndex ? 'is-active' : '' }}">{{ $label }}</span>
+                        @endforeach
+                    </div>
+                @endif
 
                 @if($order->tracking_code)
                     <div class="pay-box" style="margin-top:14px;">
@@ -94,7 +99,8 @@
                         <div class="history-item">
                             <span class="history-dot"></span>
                             <div class="history-copy">
-                                <strong>{{ ucfirst($history->type) }} : {{ ucfirst(str_replace('_', ' ', $history->nouvelle_valeur)) }}</strong>
+                                <strong>{{ \App\Models\Order::historyTypeLabel($history->type) }} :
+                                    {{ $history->type === 'paiement' ? \App\Models\Order::paymentStatusLabelFor($history->nouvelle_valeur) : \App\Models\Order::statusLabelFor($history->nouvelle_valeur) }}</strong>
                                 <small>{{ $history->created_at->format('d/m/Y H:i') }}</small>
                                 @if($history->remarque)<p>{{ $history->remarque }}</p>@endif
                             </div>

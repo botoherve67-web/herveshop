@@ -32,6 +32,17 @@
 
         <label>Description</label>
         <textarea name="description" rows="4">{{ old('description', $product->description) }}</textarea>
+        <small>Décrivez les caractéristiques exactes, l’usage, les dimensions et le contenu du colis, si ces informations sont connues.</small>
+
+        <details style="margin:14px 0;">
+            <summary>Référencement Google (facultatif)</summary>
+            <label for="seo_title">Titre SEO (70 caractères maximum)</label>
+            <input id="seo_title" type="text" name="seo_title" maxlength="70" value="{{ old('seo_title', $product->seo_title) }}" placeholder="{{ $product->name ?: 'Nom précis du produit' }} — HerveShop">
+            <small>Laissez vide pour générer le titre à partir du nom du produit.</small>
+            <label for="seo_description">Description pour les résultats Google (320 caractères maximum)</label>
+            <textarea id="seo_description" name="seo_description" rows="3" maxlength="320" placeholder="Résumé factuel et unique du produit, avec son principal avantage.">{{ old('seo_description', $product->seo_description) }}</textarea>
+            <small>Laissez vide pour reprendre la description du produit. Évitez les listes de mots-clés et les promesses non vérifiées.</small>
+        </details>
 
         <label>Prix (FCFA)</label>
         <input type="number" name="price" value="{{ old('price', $product->price) }}" required>
@@ -80,8 +91,9 @@
             Mettre en avant sur l'accueil
         </label>
 
-        <label>Images (plusieurs possibles)</label>
+        <label>Photos du produit (plusieurs possibles)</label>
         <input type="file" name="images[]" multiple accept="image/*">
+        <small>Utilisez des photos nettes, fidèles au produit, bien éclairées et cadrées. Choisissez une image principale représentative; évitez les visuels trompeurs et le texte ajouté sur l’image.</small>
 
         <button type="submit" class="btn">Enregistrer</button>
     </form>
@@ -91,7 +103,7 @@
             <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:12px; margin-bottom:16px;">
                 @foreach($product->images as $image)
                     <div class="card" style="padding:8px;">
-                        <img src="{{ asset('storage/'.$image->path) }}" alt="{{ $product->name }}" style="width:100%; height:120px; object-fit:cover; border-radius:6px;">
+                        <img src="{{ $image->url() }}" alt="{{ $product->imageAltText() }}" style="width:100%; height:120px; object-fit:cover; border-radius:6px;">
                         @if($image->is_primary)
                             <strong style="display:block; margin:6px 0;">Image principale</strong>
                         @else

@@ -34,8 +34,8 @@
                     <strong>{{ $order->reference }}</strong>
                     <small>{{ $item?->product_name ?: 'Commande HerveShop' }} @if($order->items->count() > 1)+ {{ $order->items->count() - 1 }} article(s)@endif</small>
                     <span class="order-meta">
-                        <span class="order-pill {{ $done ? 'done' : '' }}">{{ ucfirst(str_replace('_', ' ', $order->statut)) }}</span>
-                        <span class="order-pill pay">{{ ucfirst(str_replace('_', ' ', $order->statut_paiement)) }}</span>
+                        <span class="order-pill {{ $done ? 'done' : '' }}">{{ $order->statusLabel() }}</span>
+                        <span class="order-pill pay">{{ $order->paymentStatusLabel() }}</span>
                         @if($order->tracking_code)<span class="order-pill">Suivi {{ $order->tracking_code }}</span>@endif
                     </span>
                 </span>
