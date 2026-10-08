@@ -3,12 +3,18 @@
 @section('title', 'Commande — HerveShop')
 
 @section('content')
+    <style>
+        .checkout-page { display:grid; gap:12px; }
+        .checkout-item { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 15px; border:1px solid #e7edf5; border-radius:14px; background:#fff; color:#294765; font-size:.8rem; }
+        .checkout-item strong { flex:0 0 auto; color:#0969ed; }
+    </style>
+    <div class="checkout-page">
     <h1>Finaliser la commande</h1>
 
     @foreach($items as $item)
-        <div class="card" style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <div class="checkout-item">
             <span>{{ $item['product']->name }} × {{ $item['quantity'] }}</span>
-            <span>{{ number_format($item['lineTotal'], 0, ',', ' ') }} FCFA</span>
+            <strong>{{ number_format($item['lineTotal'], 0, ',', ' ') }} FCFA</strong>
         </div>
     @endforeach
 
@@ -18,7 +24,7 @@
         </div>
     @endif
 
-    <form action="{{ route('orders.store') }}" method="POST" class="card" style="max-width:500px; margin-top:20px;">
+    <form action="{{ route('orders.store') }}" method="POST" class="card checkout-form" style="max-width:500px; margin-top:20px;">
         @csrf
 
         <label>Mode de livraison</label>
@@ -69,4 +75,5 @@
             document.getElementById('champ_retrait').style.display = mode === 'point_retrait' ? 'block' : 'none';
         }
     </script>
+    </div>
 @endsection

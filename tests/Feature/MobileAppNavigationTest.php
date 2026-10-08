@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Tests\TestCase;
 
 class MobileAppNavigationTest extends TestCase
@@ -22,5 +23,26 @@ class MobileAppNavigationTest extends TestCase
             ->assertSee('<span>Catégories</span>', false)
             ->assertSee('<span>Compte</span>', false)
             ->assertSee('<span>Panier</span>', false);
+    }
+
+    public function test_authenticated_customer_keeps_account_access_in_bottom_navigation(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->get(route('home'))
+            ->assertOk()
+            ->assertSee('href="' . route('account.dashboard') . '"', false)
+            ->assertSee('<span>Compte</span>', false);
+    }
+
+    public function test_catalog_exposes_collapsible_filters_without_removing_filter_controls(): void
+    {
+        $this->get(route('products.index'))
+            ->assertOk()
+            ->assertSee('<details class="shop-filter-details">', false)
+            ->assertSee('Prix et disponibilité')
+            ->assertSee('name="prix_min"', false)
+            ->assertSee('name="prix_max"', false)
+            ->assertSee('name="disponibilite"', false)
+            ->assertSee('Appliquer les filtres');
     }
 }

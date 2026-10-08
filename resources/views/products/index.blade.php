@@ -14,12 +14,17 @@
         <aside class="shop-sidebar">
             <div class="shop-filter-title"><x-icon name="grid"/> <strong>Catégories</strong></div>
             <div class="shop-category-list">@foreach($categories as $category)<a href="{{ route('products.index', ['categorie' => $category->slug]) }}" class="{{ request('categorie') === $category->slug ? 'active' : '' }}"><span>{{ $category->name }}</span><small>{{ $category->products_count }}</small></a>@endforeach</div>
-            <form method="GET" action="{{ route('products.index') }}">
-                <input type="hidden" name="q" value="{{ request('q') }}"><input type="hidden" name="categorie" value="{{ request('categorie') }}"><input type="hidden" name="disponibilite" value="{{ request('disponibilite') }}">
-                <div class="shop-filter-block"><strong>Prix</strong><div class="price-fields"><input type="number" name="prix_min" min="0" value="{{ request('prix_min') }}" placeholder="0 FCFA"><input type="number" name="prix_max" min="0" value="{{ request('prix_max') }}" placeholder="500 000 FCFA"></div></div>
-                <div class="shop-filter-block"><strong>Disponibilité</strong><label><input type="radio" name="disponibilite" value="" @checked(!request('disponibilite'))> Toutes</label><label><input type="radio" name="disponibilite" value="stock" @checked(request('disponibilite') === 'stock')> En stock</label><label><input type="radio" name="disponibilite" value="precommande" @checked(request('disponibilite') === 'precommande')> Précommande</label></div>
-                <button class="btn" type="submit">Appliquer les filtres</button><a class="shop-reset" href="{{ route('products.index') }}">Réinitialiser</a>
-            </form>
+            <details class="shop-filter-details">
+                <summary><x-icon name="settings" size="17"/> Prix et disponibilité</summary>
+                <div class="shop-filter-content">
+                    <form method="GET" action="{{ route('products.index') }}">
+                        <input type="hidden" name="q" value="{{ request('q') }}"><input type="hidden" name="categorie" value="{{ request('categorie') }}"><input type="hidden" name="disponibilite" value="{{ request('disponibilite') }}">
+                        <div class="shop-filter-block"><strong>Prix</strong><div class="price-fields"><input type="number" name="prix_min" min="0" value="{{ request('prix_min') }}" placeholder="0 FCFA"><input type="number" name="prix_max" min="0" value="{{ request('prix_max') }}" placeholder="500 000 FCFA"></div></div>
+                        <div class="shop-filter-block"><strong>Disponibilité</strong><label><input type="radio" name="disponibilite" value="" @checked(!request('disponibilite'))> Toutes</label><label><input type="radio" name="disponibilite" value="stock" @checked(request('disponibilite') === 'stock')> En stock</label><label><input type="radio" name="disponibilite" value="precommande" @checked(request('disponibilite') === 'precommande')> Précommande</label></div>
+                        <button class="btn" type="submit">Appliquer les filtres</button><a class="shop-reset" href="{{ route('products.index') }}">Réinitialiser</a>
+                    </form>
+                </div>
+            </details>
         </aside>
 
         <section class="shop-results"><div class="shop-results-head"><div><h2>Tous les produits</h2><p>Découvrez notre large gamme de produits</p></div><form method="GET" action="{{ route('products.index') }}" class="shop-sort"><input type="hidden" name="q" value="{{ request('q') }}"><input type="hidden" name="categorie" value="{{ request('categorie') }}"><select name="tri" onchange="this.form.submit()"><option value="recent" @selected(request('tri', 'recent') === 'recent')>Trier par : Plus récents</option><option value="prix_asc" @selected(request('tri') === 'prix_asc')>Prix croissant</option><option value="prix_desc" @selected(request('tri') === 'prix_desc')>Prix décroissant</option></select></form></div><div class="shop-product-grid">@forelse($products as $product)<x-product-card :product="$product" />@empty<div class="card"><p>Aucun produit trouvé avec ces filtres.</p></div>@endforelse</div><div class="shop-pagination">{{ $products->links() }}</div></section>
